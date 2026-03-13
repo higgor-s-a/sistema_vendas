@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+
+<title>Sistema de Vendas</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<style>
+
+:root{
+--azul-principal:#0ea5e9;
+--azul-secundario:#0369a1;
+--cinza-bg:#e9eef5;
+--texto-principal:#0f172a;
+--texto-secundario:#64748b;
+--amarelo-ouro:#fbbf24;
+}
+
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:var(--cinza-bg);
+color:var(--texto-principal);
+}
+
+/* TOPO */
+
+.topo{
+background:linear-gradient(90deg,var(--azul-principal),var(--azul-secundario));
+color:white;
+padding:26px 20px 20px 20px;
+text-align:center;
+box-shadow:0 6px 20px rgba(3,105,161,0.25);
+position:relative;
+}
+
+.topo h1{
+margin:0;
+font-size:22px;
+font-weight:600;
+}
+
+.topo::after{
+content:"";
+display:block;
+width:70px;
+height:3px;
+background:rgba(255,255,255,0.5);
+margin:10px auto 12px auto;
+border-radius:10px;
+}
+
+.localizacao{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+font-size:14px;
+font-weight:500;
+}
+
+.localizacao .material-symbols-outlined{
+font-size:20px;
+color:var(--amarelo-ouro);
+}
+
+/* BOTÃO LOGOUT */
+
+.logout-topo{
+
+position:absolute;
+bottom:10px;
+right:18px;
+
+background:rgba(255,255,255,0.15);
+border:none;
+color:white;
+
+width:42px;
+height:42px;
+border-radius:10px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+transition:.2s;
+
+}
+
+.logout-topo:hover{
+background:rgba(255,255,255,0.25);
+}
+
+.logout-topo.disabled{
+opacity:0.4;
+pointer-events:none;
+}
+
+/* BOTÃO USUÁRIOS */
+
+.usuarios-topo{
+
+position:absolute;
+bottom:10px;
+left:18px;
+
+background:rgba(255,255,255,0.15);
+border:none;
+color:white;
+
+width:42px;
+height:42px;
+border-radius:10px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+transition:.2s;
+
+}
+
+.usuarios-topo:hover{
+background:rgba(255,255,255,0.25);
+}
+
+/* CONTAINER */
+
+.container{
+max-width:760px;
+margin:35px auto;
+padding:20px;
+}
+
+/* CARD */
+
+.menu-card{
+display:flex;
+align-items:stretch;
+background:#fff;
+margin-bottom:22px;
+border-radius:20px;
+box-shadow:0 14px 36px rgba(15,23,42,0.12);
+overflow:hidden;
+text-decoration:none;
+color:var(--texto-principal);
+transition:.25s;
+border:1px solid rgba(15,23,42,0.06);
+}
+
+.menu-card:hover{
+transform:translateY(-6px);
+box-shadow:0 22px 46px rgba(15,23,42,0.18);
+}
+
+/* ÍCONE */
+
+.icon{
+width:80px;
+min-width:80px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+}
+
+.material-symbols-outlined{
+font-size:32px;
+}
+
+/* TEXTO */
+
+.texto{
+padding:22px 24px;
+flex:1;
+display:flex;
+flex-direction:column;
+justify-content:center;
+}
+
+.texto h3{
+margin:0 0 6px 0;
+font-size:18px;
+font-weight:600;
+}
+
+.texto small{
+color:var(--texto-secundario);
+font-size:14px;
+}
+
+/* CORES */
+
+.venda{background:linear-gradient(135deg,#38bdf8,#0284c7);}
+.editar-venda{background:linear-gradient(135deg,#60a5fa,#2563eb);}
+.cliente{background:linear-gradient(135deg,#34d399,#16a34a);}
+.editar-cliente{background:linear-gradient(135deg,#22c55e,#15803d);}
+.extrato{background:linear-gradient(135deg,#fbbf24,#f59e0b);}
+.produto{background:linear-gradient(135deg,#2dd4bf,#0d9488);}
+.dashboard{background:linear-gradient(135deg,#38bdf8,#0369a1);}
+
+/* FOOTER */
+
+.footer{
+text-align:center;
+padding:35px 20px 25px 20px;
+font-size:13px;
+color:var(--texto-secundario);
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.container{
+margin:25px auto;
+padding:15px;
+}
+
+.icon{
+width:70px;
+min-width:70px;
+}
+
+.material-symbols-outlined{
+font-size:28px;
+}
+
+.texto{
+padding:18px;
+}
+
+.texto h3{
+font-size:16px;
+}
+
+.texto small{
+font-size:13px;
+}
+
+.logout-topo{
+bottom:10px;
+right:14px;
+}
+
+.usuarios-topo{
+bottom:10px;
+left:14px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="topo">
+
+<button onclick="window.location.href='/usuarios'" class="usuarios-topo">
+<span class="material-symbols-outlined">manage_accounts</span>
+</button>
+
+<button id="btnLogout" class="logout-topo">
+<span class="material-symbols-outlined">logout</span>
+</button>
+
+<h1>Sistema de Vendas</h1>
+
+<div class="localizacao">
+<span class="material-symbols-outlined">brightness_7</span>
+Jequié/BA
+<span class="material-symbols-outlined">brightness_7</span>
+</div>
+
+</div>
+
+<div class="container">
+
+<a class="menu-card" href="/vendas/">
+<div class="icon venda">
+<span class="material-symbols-outlined">point_of_sale</span>
+</div>
+<div class="texto">
+<h3>Nova Venda</h3>
+<small>Registrar nova venda no sistema</small>
+</div>
+</a>
+
+<a class="menu-card" href="/vendas/editar">
+<div class="icon editar-venda">
+<span class="material-symbols-outlined">edit_note</span>
+</div>
+<div class="texto">
+<h3>Editar Venda</h3>
+<small>Alterar vendas registradas</small>
+</div>
+</a>
+
+<a class="menu-card" href="/clientes/cadastrar">
+<div class="icon cliente">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<div class="texto">
+<h3>Clientes</h3>
+<small>Cadastro e consulta de clientes</small>
+</div>
+</a>
+
+<a class="menu-card" href="/clientes/editar">
+<div class="icon editar-cliente">
+<span class="material-symbols-outlined">edit</span>
+</div>
+<div class="texto">
+<h3>Editar Cliente</h3>
+<small>Alterar dados de clientes cadastrados</small>
+</div>
+</a>
+
+<a class="menu-card" href="/extrato">
+<div class="icon extrato">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div class="texto">
+<h3>Extrato / Pagamentos</h3>
+<small>Controle financeiro dos clientes</small>
+</div>
+</a>
+
+<a class="menu-card" href="/produtos">
+<div class="icon produto">
+<span class="material-symbols-outlined">inventory_2</span>
+</div>
+<div class="texto">
+<h3>Produtos</h3>
+<small>Gerenciar estoque e preços</small>
+</div>
+</a>
+
+<a class="menu-card" href="/dashboard/">
+<div class="icon dashboard">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<div class="texto">
+<h3>Dashboard</h3>
+<small>Indicadores e relatórios</small>
+</div>
+</a>
+
+</div>
+
+<div class="footer">
+© 2026 • Desenvolvido por Higgor Sampaio Alves
+</div>
+
+<script>
+
+const btnLogout = document.getElementById("btnLogout")
+
+btnLogout.addEventListener("click",function(){
+
+btnLogout.classList.add("disabled")
+
+window.location.href="/logout"
+
+})
+
+</script>
+
+</body>
+</html>

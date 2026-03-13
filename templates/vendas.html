@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Nova Venda</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+<style>
+
+:root{
+--azul-principal:#0284c7;
+--azul-secundario:#0369a1;
+--cinza-bg:#f4f6f9;
+--verde-bg:#0f5132;
+--amarelo:#facc15;
+--cinza-botao:#9ca3af;
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:var(--cinza-bg);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+top:0;
+left:-260px;
+width:250px;
+height:100%;
+background:white;
+box-shadow:2px 0 15px rgba(0,0,0,0.1);
+transition:.3s;
+padding:25px 20px;
+z-index:1001;
+}
+
+.sidebar.ativa{
+left:0;
+}
+
+.sidebar h3{
+margin-top:0;
+font-weight:700;
+margin-bottom:25px;
+}
+
+.sidebar a{
+display:flex;
+align-items:center;
+gap:12px;
+text-decoration:none;
+color:#334155;
+padding:12px;
+border-radius:10px;
+font-weight:600;
+margin-bottom:8px;
+}
+
+.sidebar a:hover{
+background:#f1f5f9;
+}
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.4);
+display:none;
+z-index:1000;
+}
+
+.overlay.ativo{
+display:block;
+}
+
+/* TOPO */
+
+.topo{
+background:linear-gradient(90deg,#0284c7,#0369a1);
+color:white;
+padding:20px 18px;
+text-align:center;
+position:relative;
+box-shadow:0 4px 14px rgba(0,0,0,0.15);
+}
+
+.topo h1{
+margin:0;
+font-size:22px;
+font-weight:700;
+letter-spacing:.3px;
+}
+
+.menu-icon{
+position:absolute;
+left:20px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+font-size:28px;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:700px;
+width:90%;
+margin:20px auto;
+}
+
+.bloco{
+background:white;
+padding:25px;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* INPUTS */
+
+input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #d1d5db;
+margin-bottom:20px;
+font-size:large;
+}
+
+input::placeholder{
+color:#9ca3af;
+}
+
+/* TOTAL */
+
+.total{
+font-size:26px;
+font-weight:700;
+text-align:center;
+color:var(--azul-secundario);
+margin-bottom:15px;
+}
+
+/* BOTÕES */
+
+.botao{
+padding:12px;
+border:none;
+border-radius:12px;
+font-weight:600;
+cursor:pointer;
+width:100%;
+font-size:large;
+}
+
+.botao-primario{
+background:linear-gradient(135deg,#0ea5e9,#0284c7);
+color:white;
+}
+
+.botao-ghost{
+opacity:.6;
+pointer-events:none;
+}
+
+/* BOTÃO VOLTAR */
+
+.botao-voltar{
+display:inline-flex;
+align-items:center;
+gap:8px;
+margin-top:25px;
+padding:12px 18px;
+border-radius:12px;
+border:none;
+font-weight:520;
+font-size:large;
+cursor:pointer;
+background:linear-gradient(135deg,#0ea5e9,#0284c7);
+color:white;
+}
+
+/* SELECT BOX */
+
+.select-box{
+position:relative;
+}
+
+.dropdown{
+position:absolute;
+width:100%;
+background:white;
+border:1px solid #d1d5db;
+border-radius:10px;
+max-height:180px;
+overflow-y:auto;
+display:none;
+z-index:1000;
+}
+
+.dropdown div{
+padding:10px;
+cursor:pointer;
+}
+
+.dropdown div:hover{
+background:#f1f5f9;
+}
+
+/* ALERTA */
+
+.alerta{
+display:none;
+position:fixed;
+top:15px;
+left:50%;
+transform:translateX(-50%);
+background:var(--verde-bg);
+color:var(--amarelo);
+padding:12px 20px;
+border-radius:12px;
+font-weight:700;
+z-index:2000;
+white-space:nowrap;
+}
+
+.alerta.mostrar{
+display:block;
+}
+
+/* MODAL */
+
+.modal-bg{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.45);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:3000;
+}
+
+.modal{
+background:white;
+padding:25px;
+border-radius:16px;
+max-width:380px;
+width:90%;
+text-align:center;
+}
+
+.modal button{
+margin-top:10px;
+}
+
+.modal-botoes{
+display:flex;
+gap:10px;
+margin-top:15px;
+}
+
+.modal-botoes button{
+flex:1;
+}
+
+.btn-sim{
+background:#16a34a;
+color:white;
+}
+
+.btn-nao{
+background:#dc2626;
+color:white;
+}
+
+.btn-cancelar{
+background:var(--cinza-botao);
+color:white;
+}
+
+/* RADIO GROUP */
+
+.radio-group{
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+width:100%;
+margin-top:15px;
+}
+
+.radio-group label{
+display:flex;
+align-items:center;
+gap:8px;
+cursor:pointer;
+}
+
+.radio-group input[type="radio"]{
+margin:0;
+}
+
+</style>
+</head>
+
+<body data-venda-registrada="{{ 'true' if venda_registrada else 'false' }}">
+
+<div class="overlay" id="overlay" onclick="fecharMenu()"></div>
+
+<div class="sidebar" id="menu">
+<h3>Ir para...</h3>
+
+<a href="/">
+<span class="material-symbols-outlined">home</span>
+Início
+</a>
+
+<a href="/vendas/editar">
+<span class="material-symbols-outlined">edit</span>
+Editar Venda
+</a>
+
+<a href="/clientes/cadastrar">
+<span class="material-symbols-outlined">groups</span>
+Clientes
+</a>
+
+<a href="/clientes/editar">
+<span class="material-symbols-outlined">person_edit</span>
+Editar Cliente
+</a>
+
+<a href="/extrato">
+<span class="material-symbols-outlined">receipt_long</span>
+Extrato / Pagamentos
+</a>
+
+<a href="/produtos">
+<span class="material-symbols-outlined">inventory_2</span>
+Produtos
+</a>
+
+<a href="/dashboard">
+<span class="material-symbols-outlined">dashboard</span>
+Dashboard
+</a>
+
+</div>
+
+<div id="alertaVenda" class="alerta">
+Venda registrada com sucesso!
+</div>
+
+<div class="topo">
+<span class="material-symbols-outlined menu-icon" onclick="abrirMenu()">menu</span>
+<h1>Nova Venda</h1>
+</div>
+
+<div class="container">
+
+<div class="bloco">
+
+<form method="POST" id="formVenda">
+
+<input type="hidden" name="pago" id="pago">
+<input type="hidden" name="forma_pagamento" id="forma_pagamento">
+
+<label>Cliente</label>
+
+<div class="select-box">
+
+<input
+type="text"
+id="clienteInput"
+name="cliente"
+placeholder="Digite um nome..."
+autocomplete="off"
+required>
+
+<div class="dropdown" id="clienteDropdown">
+
+{% for c in clientes %}
+<div data-nome="{{ c.nome }}" onclick="selecionarCliente(this)">
+{{ c.nome }}
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+<label>Produto</label>
+
+<div class="select-box">
+
+<input
+type="text"
+id="produtoInput"
+name="produto"
+placeholder="Escolha um produto..."
+autocomplete="off"
+required>
+
+<div class="dropdown" id="produtoDropdown">
+
+{% for p in produtos %}
+<div data-nome="{{ p.nome }}" onclick="selecionarProduto(this)">
+{{ p.nome }}
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+<label>Preço</label>
+
+<input type="text" id="preco" placeholder="R$ 0,00" readonly>
+
+<label>Quantidade</label>
+
+<input
+type="number"
+name="quantidade"
+id="quantidade"
+placeholder="0"
+min="1"
+oninput="calcularTotal()"
+required>
+
+<label>Total</label>
+
+<div class="total" id="total">
+R$ 0,00
+</div>
+
+<button
+type="button"
+class="botao botao-primario"
+id="btnSalvar"
+onclick="validarCampos()">
+
+<span class="material-symbols-outlined">save</span>
+Salvar Venda
+
+</button>
+
+</form>
+
+</div>
+
+<button class="botao-voltar" onclick="window.location.href='/'">
+<span class="material-symbols-outlined">arrow_back</span>
+Voltar
+</button>
+
+</div>
+
+<!-- POPUPS -->
+
+<div class="modal-bg" id="popupCampos">
+<div class="modal">
+<h3>Preencha todos os campos!</h3>
+<button class="botao botao-primario" onclick="fecharPopup('popupCampos')">OK</button>
+</div>
+</div>
+
+<div class="modal-bg" id="popupPagamento">
+<div class="modal">
+
+<h3 style="white-space:nowrap;">O cliente já fez o pagamento?</h3>
+
+<div class="modal-botoes">
+<button class="botao btn-sim" onclick="respostaPagamento('sim')">Sim</button>
+<button class="botao btn-nao" onclick="respostaPagamento('nao')">Não</button>
+<button class="botao btn-cancelar" onclick="fecharPopup('popupPagamento')">Cancelar</button>
+</div>
+
+</div>
+</div>
+
+<div class="modal-bg" id="popupForma">
+<div class="modal">
+
+<h3>Qual a forma de pagamento?</h3>
+
+<div class="radio-group">
+<label><input type="radio" name="formaRadio" value="Pix"> Pix</label>
+<label><input type="radio" name="formaRadio" value="Dinheiro"> Dinheiro</label>
+<label><input type="radio" name="formaRadio" value="Cartão"> Cartão</label>
+</div>
+
+<div class="modal-botoes">
+<button class="botao btn-sim" onclick="confirmarForma()">Salvar</button>
+<button class="botao btn-cancelar" onclick="fecharPopup('popupForma')">Cancelar</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* SIDEBAR */
+
+function abrirMenu(){
+menu.classList.add("ativa")
+overlay.classList.add("ativo")
+}
+
+function fecharMenu(){
+menu.classList.remove("ativa")
+overlay.classList.remove("ativo")
+}
+
+/* ALERTA */
+
+window.onload=function(){
+if(document.body.dataset.vendaRegistrada==="true"){
+alertaVenda.classList.add("mostrar")
+setTimeout(()=>{alertaVenda.classList.remove("mostrar")},2500)
+}
+}
+
+/* CLIENTE */
+
+clienteInput.oninput=function(){
+
+let filtro=this.value.toLowerCase()
+let itens=clienteDropdown.getElementsByTagName("div")
+
+if(!filtro){
+clienteDropdown.style.display="none"
+return
+}
+
+clienteDropdown.style.display="block"
+
+for(let i of itens){
+i.style.display=i.innerText.toLowerCase().includes(filtro)?"block":"none"
+}
+
+}
+
+function selecionarCliente(el){
+clienteInput.value=el.dataset.nome
+clienteDropdown.style.display="none"
+}
+
+/* PRODUTO */
+
+produtoInput.onfocus=function(){
+produtoDropdown.style.display="block"
+}
+
+produtoInput.oninput=function(){
+
+let filtro=this.value.toLowerCase()
+let itens=produtoDropdown.getElementsByTagName("div")
+
+produtoDropdown.style.display="block"
+
+for(let i of itens){
+i.style.display=i.innerText.toLowerCase().includes(filtro)?"block":"none"
+}
+
+}
+
+function selecionarProduto(el){
+produtoInput.value=el.dataset.nome
+produtoDropdown.style.display="none"
+buscarPreco()
+}
+
+/* FECHAR DROPDOWNS AO CLICAR FORA */
+
+document.addEventListener("click",function(e){
+
+if(!e.target.closest("#clienteInput") && !e.target.closest("#clienteDropdown")){
+clienteDropdown.style.display="none"
+}
+
+if(!e.target.closest("#produtoInput") && !e.target.closest("#produtoDropdown")){
+produtoDropdown.style.display="none"
+}
+
+})
+
+/* PREÇO */
+
+let precoInput=0
+
+function formatarMoeda(v){
+return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+}
+
+function buscarPreco(){
+
+fetch("/vendas/preco/"+produtoInput.value)
+
+.then(r=>r.json())
+
+.then(d=>{
+
+precoInput=parseFloat(d.preco)||0
+preco.value=formatarMoeda(precoInput)
+calcularTotal()
+
+})
+
+}
+
+/* TOTAL */
+
+function calcularTotal(){
+
+let qtd=parseFloat(quantidade.value)||0
+total.innerText=formatarMoeda(precoInput*qtd)
+
+}
+
+/* VALIDAÇÃO */
+
+function validarCampos(){
+
+if(!clienteInput.value || !produtoInput.value || !quantidade.value){
+
+abrirPopup("popupCampos")
+return
+
+}
+
+abrirPopup("popupPagamento")
+
+}
+
+/* POPUPS */
+
+function abrirPopup(id){
+document.getElementById(id).style.display="flex"
+}
+
+function fecharPopup(id){
+document.getElementById(id).style.display="none"
+}
+
+/* PAGAMENTO */
+
+function respostaPagamento(resp){
+
+pago.value=resp
+
+if(resp==="sim"){
+
+fecharPopup("popupPagamento")
+abrirPopup("popupForma")
+
+}else{
+
+bloquearBotoes("popupPagamento")
+formVenda.submit()
+
+}
+
+}
+
+/* FORMA */
+
+function confirmarForma(){
+
+let selecionado=document.querySelector("input[name='formaRadio']:checked")
+
+if(!selecionado)return
+
+forma_pagamento.value=selecionado.value
+
+bloquearBotoes("popupForma")
+
+formVenda.submit()
+
+}
+
+/* BOTÕES GHOST */
+
+function bloquearBotoes(popup){
+
+let botoes=document.querySelectorAll("#"+popup+" button")
+
+botoes.forEach(b=>b.classList.add("botao-ghost"))
+
+}
+
+</script>
+
+</body>
+</html>

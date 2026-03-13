@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editar Venda</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+<style>
+
+:root{
+--azul-principal:#0284c7;
+--azul-secundario:#0369a1;
+--cinza-bg:#f4f6f9;
+--cinza-botao:#9ca3af;
+}
+
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:var(--cinza-bg);
+}
+
+/* TOPO PADRONIZADO */
+
+.topo{
+background:linear-gradient(90deg,#0284c7,#0369a1);
+color:white;
+padding:20px 18px;
+text-align:center;
+position:relative;
+box-shadow:0 4px 14px rgba(0,0,0,0.15);
+}
+
+.topo h1{
+margin:0;
+font-size:22px;
+font-weight:700;
+letter-spacing:.3px;
+}
+
+.menu-icon{
+position:absolute;
+left:20px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+font-size:28px;
+}
+
+/* SIDEBAR PADRÃO */
+
+.sidebar{
+position:fixed;
+top:0;
+left:-260px;
+width:250px;
+height:100%;
+background:white;
+box-shadow:2px 0 15px rgba(0,0,0,0.1);
+transition:.3s;
+padding:25px 20px;
+z-index:4000;
+}
+
+.sidebar.ativa{
+left:0;
+}
+
+.sidebar h3{
+margin-top:0;
+font-weight:700;
+margin-bottom:25px;
+}
+
+.sidebar a{
+display:flex;
+align-items:center;
+gap:12px;
+text-decoration:none;
+color:#334155;
+padding:12px;
+border-radius:10px;
+font-weight:600;
+margin-bottom:8px;
+}
+
+.sidebar a:hover{
+background:#f1f5f9;
+}
+
+/* OVERLAY */
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.4);
+display:none;
+z-index:3000;
+}
+
+.overlay.ativo{
+display:block;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:700px;
+margin:25px auto;
+padding:15px;
+}
+
+.box{
+background:white;
+padding:22px;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,.06);
+}
+
+/* INPUT */
+
+input,select{
+width:100%;
+padding:12px;
+margin-top:6px;
+margin-bottom:15px;
+border-radius:10px;
+border:1px solid #d1d5db;
+font-size:16px;
+}
+
+input[type="date"]{
+font-size:17px;
+padding:14px;
+}
+
+/* BOTÕES */
+
+button{
+padding:12px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-size:15px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+transition:.2s;
+}
+
+button:hover{opacity:.9}
+
+button:disabled{
+opacity:.45 !important;
+pointer-events:none !important;
+cursor:not-allowed !important;
+filter:grayscale(60%);
+}
+
+.btn-buscar{
+background:linear-gradient(135deg,#0ea5e9,#0284c7);
+color:white;
+width:100%;
+margin-bottom:15px;
+font-weight:normal;
+font-size: large;
+}
+
+.btn-editar{
+background:#f59e0b;
+color:white;
+flex:1;
+}
+
+.btn-excluir{
+background:#dc2626;
+color:white;
+flex:1;
+}
+
+/* BOTÃO VOLTAR */
+
+.botao-voltar{
+display:inline-flex;
+align-items:center;
+gap:8px;
+margin-top:25px;
+padding:12px 18px;
+border-radius:12px;
+border:none;
+font-weight:520;
+font-size:16px;
+cursor:pointer;
+background:linear-gradient(135deg,#0ea5e9,#0284c7);
+color:white;
+}
+
+/* STATUS */
+
+.status-paga{color:#16a34a;font-weight:bold;}
+.status-aberta{color:#dc2626;font-weight:bold;}
+
+/* CARD */
+
+.card{
+border:1px solid #e5e7eb;
+border-radius:12px;
+padding:14px;
+margin-bottom:10px;
+background:#fafafa;
+}
+
+.card-botoes{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+/* MODAL */
+
+.modal-bg{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.55);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:5000;
+padding:20px;
+}
+
+.modal{
+background:white;
+padding:20px;
+border-radius:16px;
+width:100%;
+max-width:420px;
+max-height:90vh;
+overflow:auto;
+}
+
+.modal-botoes{
+display:flex;
+gap:10px;
+}
+
+.modal-botoes button{
+flex:1;
+}
+
+.btn-salvar{
+background:linear-gradient(135deg,#0ea5e9,#0284c7);
+color:white;
+}
+
+.btn-cancelar{
+background:#6c757d;
+color:white;
+}
+
+.btn-sim{background:#dc2626;color:white;}
+.btn-nao{background:#6c757d;color:white;}
+
+/* ALERTA */
+
+.alerta{
+position:fixed;
+top:-80px;
+left:50%;
+transform:translateX(-50%);
+background:#15803d;
+color:#facc15;
+padding:14px 28px;
+border-radius:10px;
+font-weight:700;
+white-space:nowrap;
+transition:.6s;
+z-index:6000;
+}
+
+.alerta.mostrar{
+top:20px;
+}
+
+/* CHECKBOX */
+
+.check-container{
+display:flex;
+align-items:center;
+gap:8px;
+margin-bottom:15px;
+cursor:pointer;
+}
+
+.check-container input{
+width:auto;
+margin:0;
+}
+
+/* POPUP DATA */
+
+.popup-bg{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.5);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:7000;
+}
+
+.popup{
+background:white;
+padding:25px;
+border-radius:16px;
+text-align:center;
+width:90%;
+max-width:320px;
+}
+
+.popup button{
+margin-top:20px;
+width:120px;
+padding:14px;
+font-size:16px;
+margin-left:auto;
+margin-right:auto;
+display:block;
+background:linear-gradient(135deg,#0ea5e9,#0284c7);
+color:white;
+}
+
+/* CONFIRM DELETE */
+
+.confirm-box{
+background:white;
+padding:22px;
+border-radius:16px;
+text-align:center;
+width:90%;
+max-width:320px;
+font-weight: bold;
+}
+
+.confirm-botoes{
+display:flex;
+gap:10px;
+margin-top:15px;
+}
+
+.confirm-botoes button{
+flex:1;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="alerta" id="alerta">Operação realizada com sucesso!</div>
+
+<div class="overlay" id="overlay" onclick="fecharSidebar()"></div>
+
+<div class="sidebar" id="sidebar">
+
+<h3>Ir para...</h3>
+
+<a href="/">
+<span class="material-symbols-outlined">home</span>
+Início
+</a>
+
+<a href="/vendas">
+<span class="material-symbols-outlined">point_of_sale</span>
+Nova Venda
+</a>
+
+<a href="/clientes/cadastrar">
+<span class="material-symbols-outlined">groups</span>
+Clientes
+</a>
+
+<a href="/clientes/editar">
+<span class="material-symbols-outlined">person_edit</span>
+Editar Cliente
+</a>
+
+<a href="/extrato">
+<span class="material-symbols-outlined">receipt_long</span>
+Extrato / Pagamentos
+</a>
+
+<a href="/produtos">
+<span class="material-symbols-outlined">inventory_2</span>
+Produtos
+</a>
+
+<a href="/dashboard">
+<span class="material-symbols-outlined">dashboard</span>
+Dashboard
+</a>
+
+</div>
+
+<div class="topo">
+<span class="material-symbols-outlined menu-icon" onclick="abrirSidebar()">menu</span>
+<h1>Editar Venda</h1>
+</div>
+
+<div class="container">
+
+<div class="box">
+
+<label>Digite a data da venda:</label>
+<input type="date" id="buscaData">
+
+<button id="btnBuscar" class="btn-buscar" onclick="buscar()">
+<span class="material-symbols-outlined">search</span>Buscar
+</button>
+
+<div id="resultado"></div>
+
+</div>
+
+<button class="botao-voltar" onclick="window.location.href='/'">
+<span class="material-symbols-outlined">arrow_back</span>
+Voltar
+</button>
+
+</div>
+
+<div class="popup-bg" id="popupData">
+<div class="popup">
+<p>Preencha a data corretamente!</p>
+<button onclick="fecharPopupData()">OK</button>
+</div>
+</div>
+
+<div class="modal-bg" id="confirmDelete">
+<div class="confirm-box">
+<p>Deseja excluir esta venda?</p>
+<div class="confirm-botoes">
+<button id="btnSimExcluir" class="btn-sim" onclick="confirmarExclusao()">Sim</button>
+<button id="btnNaoExcluir" class="btn-nao" onclick="fecharConfirm()">Não</button>
+</div>
+</div>
+</div>
+
+<div class="modal-bg" id="modalEdicao">
+<div class="modal">
+
+<h3>Editar Venda</h3>
+
+<input type="hidden" id="editVendaId">
+
+<label>Produto</label>
+<select id="editProduto">
+{% for p in produtos %}
+<option value="{{ p.nome }}">{{ p.nome }}</option>
+{% endfor %}
+</select>
+
+<label>Quantidade</label>
+<input type="number" id="editQuantidade" min="1">
+
+<label class="check-container">
+<input type="checkbox" id="editPago" onchange="toggleFormaPagamento()">
+<span>Cliente pagou!</span>
+</label>
+
+<div class="forma-box" id="formaPagamentoBox">
+
+<label>Forma de pagamento</label>
+<select id="editFormaPagamento">
+<option value="">Selecione...</option>
+<option value="Pix">Pix</option>
+<option value="Dinheiro">Dinheiro</option>
+<option value="Cartão">Cartão</option>
+</select>
+
+</div>
+
+<div class="modal-botoes">
+<button class="btn-salvar" id="btnSalvarEdicao" onclick="salvarEdicao()">Salvar</button>
+<button class="btn-cancelar" id="btnCancelarEdicao" onclick="fecharModal()">Cancelar</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let vendaExcluir=null;
+
+function desabilitarTodosBotoes(){
+document.querySelectorAll("button").forEach(btn=>{
+btn.disabled=true;
+});
+}
+
+function habilitarTodosBotoes(){
+document.querySelectorAll("button").forEach(btn=>{
+btn.disabled=false;
+});
+}
+
+function abrirSidebar(){
+sidebar.classList.add("ativa");
+overlay.classList.add("ativo");
+}
+
+function fecharSidebar(){
+sidebar.classList.remove("ativa");
+overlay.classList.remove("ativo");
+}
+
+function buscar(){
+
+let data=buscaData.value;
+
+if(!data){
+popupData.style.display="flex";
+return;
+}
+
+document.getElementById("buscaData").disabled=true;
+desabilitarTodosBotoes();
+
+fetch("/vendas/por_data/"+data)
+.then(res=>res.json())
+.then(lista=>{
+
+document.getElementById("buscaData").disabled=false;
+habilitarTodosBotoes();
+
+if(lista.length===0){
+resultado.innerHTML="<p>Nenhuma venda encontrada.</p>";
+return;
+}
+
+let html="";
+
+lista.forEach(v=>{
+
+html+=`
+
+<div class="card">
+
+<strong>${v.produto}</strong><br>
+Cliente: ${v.cliente}<br>
+Quantidade: ${v.quantidade}<br>
+Data/Hora: ${v.data_hora}<br>
+
+Status: <span class="${v.paga?'status-paga':'status-aberta'}">
+${v.paga?'Paga':'Em aberto'}
+</span><br>
+
+Forma: ${v.forma_pagamento||'-'}
+
+<div class="card-botoes">
+
+<button class="btn-editar" onclick="abrirModal(${v.id},'${v.produto}',${v.quantidade},${v.paga},'${v.forma_pagamento||''}')">
+<span class="material-symbols-outlined">edit</span>Editar
+</button>
+
+<button class="btn-excluir" onclick="abrirConfirm(${v.id})">
+<span class="material-symbols-outlined">delete</span>Excluir
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+resultado.innerHTML=html;
+
+});
+
+}
+
+function fecharPopupData(){
+popupData.style.display="none";
+}
+
+function abrirConfirm(id){
+vendaExcluir=id;
+document.getElementById("confirmDelete").style.display="flex";
+}
+
+function fecharConfirm(){
+document.getElementById("confirmDelete").style.display="none";
+}
+
+function confirmarExclusao(){
+
+desabilitarTodosBotoes();
+
+fetch("/vendas/excluir/"+vendaExcluir,{method:"POST"})
+.then(()=>{
+
+fecharConfirm();
+mostrarAlerta("Venda excluída com sucesso!");
+buscar();
+
+});
+
+}
+
+function abrirModal(id,produto,qtd,paga,forma){
+
+document.getElementById("modalEdicao").style.display="flex";
+
+editVendaId.value=id;
+editProduto.value=produto;
+editQuantidade.value=qtd;
+editPago.checked=paga;
+
+if(paga){
+formaPagamentoBox.style.display="block";
+editFormaPagamento.value=forma;
+}else{
+formaPagamentoBox.style.display="none";
+}
+
+}
+
+function fecharModal(){
+document.getElementById("modalEdicao").style.display="none";
+}
+
+function toggleFormaPagamento(){
+formaPagamentoBox.style.display=editPago.checked?"block":"none";
+}
+
+function salvarEdicao(){
+
+document.querySelectorAll("#modalEdicao input,#modalEdicao select,#modalEdicao button").forEach(el=>{
+el.disabled=true;
+});
+
+let formData=new FormData();
+
+formData.append("venda_id",editVendaId.value);
+formData.append("produto",editProduto.value);
+formData.append("quantidade",editQuantidade.value);
+formData.append("pagar_agora",editPago.checked);
+formData.append("forma_pagamento",editFormaPagamento.value);
+
+fetch("/vendas/salvar_edicao",{method:"POST",body:formData})
+.then(res=>res.json())
+.then(data=>{
+
+if(data.status==="ok"){
+
+fecharModal();
+mostrarAlerta("Venda editada com sucesso!");
+buscar();
+
+}
+
+});
+
+}
+
+function mostrarAlerta(msg){
+
+let alerta=document.getElementById("alerta");
+
+alerta.innerText=msg;
+
+alerta.classList.add("mostrar");
+
+setTimeout(()=>{
+alerta.classList.remove("mostrar");
+},2500);
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Novo Cliente</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<style>
+:root{
+    --azul-principal:#0ea5e9;
+    --azul-secundario:#0284c7;
+    --cinza-bg:#f1f5f9;
+    --texto:#0f172a;
+    --cinza-botao:#9ca3af;
+    --verde-bg:#166534;
+    --amarelo:#fbbf24;
+}
+
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background:var(--cinza-bg);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:-260px;
+    width:250px;
+    height:100%;
+    background:white;
+    box-shadow:2px 0 20px rgba(0,0,0,0.15);
+    transition:.3s;
+    padding:25px 20px;
+    z-index:1001;
+}
+
+.sidebar.ativa{ left:0 }
+
+.sidebar h3{
+    margin-top:0;
+    font-weight:700;
+    margin-bottom:25px;
+}
+
+.sidebar a{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-decoration:none;
+    color:#334155;
+    padding:12px;
+    border-radius:10px;
+    font-weight:600;
+    margin-bottom:8px;
+}
+
+.sidebar a:hover{
+    background:#e2e8f0;
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.4);
+    display:none;
+    z-index:1000;
+}
+
+.overlay.ativo{ display:block }
+
+/* TOPO */
+
+.topo{
+    background:linear-gradient(90deg,var(--azul-principal),var(--azul-secundario));
+    color:white;
+    padding:24px 18px 20px 18px;
+    text-align:center;
+    position:relative;
+    box-shadow:0 6px 20px rgba(3,105,161,0.25);
+}
+
+.topo h1{
+    margin:0;
+    font-size:22px;
+    font-weight:600;
+}
+
+.menu-icon{
+    position:absolute;
+    left:20px;
+    top:22px;
+    cursor:pointer;
+}
+
+/* CONTAINER */
+
+.container{
+    max-width:700px;
+    width:90%;
+    margin:30px auto;
+}
+
+.bloco{
+    background:white;
+    padding:28px;
+    border-radius:16px;
+    box-shadow:0 14px 35px rgba(0,0,0,0.08);
+}
+
+input[type="text"]{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #d1d5db;
+    margin-bottom:20px;
+    font-size: large;
+    font-weight:400;
+}
+
+.botao{
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    font-weight:600;
+    cursor:pointer;
+    width:100%;
+    font-size: large;
+}
+
+.botao-primario{
+    background:linear-gradient(135deg,#0ea5e9,#0284c7);
+    color:white;
+}
+
+.botao-primario.ghost{
+    opacity:.6;
+    pointer-events:none;
+}
+
+.botao-voltar{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:25px;
+    padding:12px 18px;
+    border-radius:12px;
+    border:none;
+    font-weight:520;
+    font-size: large;
+    cursor:pointer;
+    background:linear-gradient(135deg,#0ea5e9,#0284c7);
+    color:white;
+}
+
+.botao-voltar.ghost{
+    opacity:.6;
+    pointer-events:none;
+}
+
+.alerta{
+    display:none;
+    position:fixed;
+    top:15px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--verde-bg);
+    color:var(--amarelo);
+    padding:12px 20px;
+    border-radius:12px;
+    font-weight:700;
+    z-index:2000;
+    white-space:nowrap;
+    animation:fadein .3s ease;
+}
+
+@keyframes fadein{
+from{opacity:0; transform:translate(-50%,-10px)}
+to{opacity:1; transform:translate(-50%,0)}
+}
+
+.alerta.mostrar{ display:block }
+
+/* POPUPS */
+
+.popup-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:3000;
+}
+
+.popup{
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    text-align:center;
+    width:320px;
+}
+
+.popup-botoes{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-top:20px;
+}
+
+.popup button{
+    width:120px;
+    padding:12px 0;
+    border:none;
+    border-radius:10px;
+    font-weight:700;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.popup .sim{
+    background:#16a34a;
+    color:white;
+}
+
+.popup .cancelar{
+    background:#ef4444;
+    color:white;
+}
+
+/* ESTILO GHOST PARA BOTÕES DO POPUP */
+
+.popup button.ghost{
+    opacity:.6;
+    pointer-events:none;
+}
+
+</style>
+</head>
+
+<body data-cadastrado="{{ 'true' if cliente_cadastrado else 'false' }}">
+
+<div class="overlay" id="overlay" onclick="fecharMenu()"></div>
+
+<div class="sidebar" id="menu">
+<h3>Ir para...</h3>
+
+<a href="/">
+<span class="material-symbols-outlined">home</span>
+Início
+</a>
+
+<a href="/vendas/">
+<span class="material-symbols-outlined">point_of_sale</span>
+Nova Venda
+</a>
+
+<a href="/vendas/editar">
+<span class="material-symbols-outlined">edit_note</span>
+Editar Venda
+</a>
+
+<a href="/clientes/editar">
+<span class="material-symbols-outlined">edit</span>
+Editar Cliente
+</a>
+
+<a href="/extrato">
+<span class="material-symbols-outlined">payments</span>
+Extrato / Pagamentos
+</a>
+
+<a href="/produtos">
+<span class="material-symbols-outlined">inventory_2</span>
+Produtos
+</a>
+
+<a href="/dashboard">
+<span class="material-symbols-outlined">analytics</span>
+Dashboard
+</a>
+
+</div>
+
+<div id="alertaCadastro" class="alerta">
+Cliente cadastrado com sucesso!
+</div>
+
+<div class="popup-overlay" id="popupTelefone">
+<div class="popup">
+<p><strong>Número de telefone incorreto!</strong></p>
+<div class="popup-botoes">
+<button onclick="fecharPopupTelefone()">OK</button>
+</div>
+</div>
+</div>
+
+<div class="popup-overlay" id="popupConfirmar">
+<div class="popup">
+<p><strong>Cadastrar cliente?</strong></p>
+
+<div class="popup-botoes">
+<button class="sim" id="btnPopupSim" onclick="confirmarCadastro()">Sim</button>
+<button class="cancelar" id="btnPopupCancelar" onclick="fecharPopupConfirmar()">Cancelar</button>
+</div>
+
+</div>
+</div>
+
+<div class="topo">
+<span class="material-symbols-outlined menu-icon" onclick="abrirMenu()">menu</span>
+<h1>Novo Cliente</h1>
+</div>
+
+<div class="container">
+
+<div class="bloco">
+<h2>Cadastrar Cliente</h2>
+
+<form method="POST" id="formNovo">
+
+<input type="text"
+name="nome"
+placeholder="Digite o nome completo..."
+required>
+
+<input type="text"
+name="telefone"
+id="telefone"
+autocomplete="off">
+
+<button type="submit"
+id="btnCadastrar"
+class="botao botao-primario">
+Cadastrar Cliente
+</button>
+
+</form>
+
+</div>
+
+<button id="btnVoltar" class="botao-voltar" onclick="voltarPagina()">
+<span class="material-symbols-outlined">arrow_back</span>
+Voltar
+</button>
+
+</div>
+
+<script>
+
+const telefoneInput = document.getElementById("telefone");
+const btnCadastrar = document.getElementById("btnCadastrar");
+const btnVoltar = document.getElementById("btnVoltar");
+const formNovo = document.getElementById("formNovo");
+
+const popupConfirmar = document.getElementById("popupConfirmar");
+
+const mascara = "(__) _ ____-____";
+
+function aplicarMascara(numeros){
+let resultado="";
+let i=0;
+
+for(let c of mascara){
+if(c === "_"){
+resultado += numeros[i] || "_";
+i++;
+}else{
+resultado += c;
+}
+}
+
+return resultado;
+}
+
+function getNumeros(){
+return telefoneInput.value.replace(/\D/g,"").slice(0,11);
+}
+
+function atualizar(){
+
+let numeros = getNumeros();
+telefoneInput.value = aplicarMascara(numeros);
+
+let pos = telefoneInput.value.indexOf("_");
+
+if(pos === -1) pos = telefoneInput.value.length;
+
+telefoneInput.setSelectionRange(pos,pos);
+
+}
+
+telefoneInput.addEventListener("input", atualizar);
+
+telefoneInput.addEventListener("focus", ()=>{
+
+if(telefoneInput.value.trim()===""){
+telefoneInput.value = mascara;
+telefoneInput.setSelectionRange(1,1);
+}
+
+});
+
+telefoneInput.addEventListener("blur", ()=>{
+
+if(getNumeros().length===0){
+telefoneInput.value = mascara;
+}
+
+});
+
+formNovo.addEventListener("submit", function(e){
+
+let nums = getNumeros();
+
+if(!(nums.length===11 || nums.length===0)){
+e.preventDefault();
+document.getElementById("popupTelefone").style.display="flex";
+return;
+}
+
+e.preventDefault();
+popupConfirmar.style.display="flex";
+
+});
+
+function confirmarCadastro(){
+
+const btnSim = document.getElementById("btnPopupSim");
+const btnCancelar = document.getElementById("btnPopupCancelar");
+
+btnSim.disabled = true;
+btnCancelar.disabled = true;
+
+btnSim.classList.add("ghost");
+btnCancelar.classList.add("ghost");
+
+btnCadastrar.classList.add("ghost");
+btnVoltar.classList.add("ghost");
+
+formNovo.submit();
+
+}
+
+function fecharPopupConfirmar(){
+popupConfirmar.style.display="none";
+}
+
+function fecharPopupTelefone(){
+document.getElementById("popupTelefone").style.display="none";
+}
+
+function abrirMenu(){
+menu.classList.add("ativa");
+overlay.classList.add("ativo");
+}
+
+function fecharMenu(){
+menu.classList.remove("ativa");
+overlay.classList.remove("ativo");
+}
+
+function voltarPagina(){
+window.location.href="/";
+}
+
+window.onload=function(){
+
+telefoneInput.value = mascara;
+
+if(document.body.dataset.cadastrado==="true"){
+alertaCadastro.classList.add("mostrar");
+
+setTimeout(()=>{
+alertaCadastro.classList.remove("mostrar");
+},2000);
+}
+
+}
+
+</script>
+
+</body>
+</html>

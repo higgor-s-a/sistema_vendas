@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Usuários do Sistema</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<style>
+
+:root{
+--azul-principal:#0284c7;
+--azul-secundario:#0369a1;
+--cinza-bg:#e2e8f0;
+--texto:#0f172a;
+--verde:#16a34a;
+--verde-bandeira:#15803d;
+--vermelho:#dc2626;
+--amarelo-dourado:#facc15;
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:var(--cinza-bg);
+color:var(--texto);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+top:0;
+left:-260px;
+width:250px;
+height:100%;
+background:white;
+box-shadow:2px 0 25px rgba(0,0,0,0.25);
+transition:.3s;
+padding:25px 20px;
+z-index:1001;
+}
+
+.sidebar.ativa{ left:0 }
+
+.sidebar h3{
+margin-top:0;
+font-weight:700;
+margin-bottom:25px;
+}
+
+.sidebar a{
+display:flex;
+align-items:center;
+gap:12px;
+text-decoration:none;
+color:#1e293b;
+padding:12px;
+border-radius:10px;
+font-weight:600;
+margin-bottom:8px;
+}
+
+.sidebar a:hover{
+background:#cbd5f5;
+}
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.45);
+display:none;
+z-index:1000;
+}
+
+.overlay.ativo{ display:block }
+
+/* TOPO */
+
+.topo{
+background:linear-gradient(90deg,var(--azul-principal),var(--azul-secundario));
+color:white;
+padding:24px 18px 20px 18px;
+text-align:center;
+position:relative;
+box-shadow:0 8px 25px rgba(3,105,161,0.35);
+}
+
+.topo h1{
+margin:0;
+font-size:22px;
+font-weight:600;
+}
+
+.menu-icon{
+position:absolute;
+left:20px;
+top:22px;
+cursor:pointer;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:700px;
+width:90%;
+margin:30px auto;
+}
+
+.bloco{
+background:white;
+padding:25px;
+border-radius:16px;
+box-shadow:0 16px 40px rgba(0,0,0,0.12);
+margin-bottom:20px;
+}
+
+h2{margin-top:0}
+
+/* INPUT */
+
+input,select{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #94a3b8;
+margin-bottom:15px;
+font-size:16px;
+}
+
+/* BOTÕES */
+
+.botao{
+padding:10px 14px;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+font-size:14px;
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+.botao-verde{background:var(--verde);color:white}
+.botao-vermelho{background:var(--vermelho);color:white}
+.botao-azul{background:var(--azul-principal);color:white}
+
+.botao:disabled{
+opacity:0.5;
+cursor:not-allowed;
+}
+
+.botoes-usuario{
+display:flex;
+gap:8px;
+margin-top:10px;
+}
+
+/* STATUS */
+
+.status-ativo{color:#16a34a;font-weight:600}
+.status-inativo{color:#dc2626;font-weight:600}
+
+/* MOBILE CARDS */
+
+.usuario-card{
+background:white;
+border-radius:12px;
+padding:14px;
+margin-bottom:12px;
+box-shadow:0 4px 14px rgba(0,0,0,0.12);
+}
+
+.usuario-info{
+font-size:14px;
+margin-bottom:6px;
+}
+
+/* POPUP */
+
+.popup{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.5);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:2000;
+}
+
+.popup-box{
+background:white;
+padding:25px;
+border-radius:14px;
+text-align:center;
+width:85%;
+max-width:320px;
+}
+
+.popup-buttons{
+display:flex;
+gap:10px;
+margin-top:20px;
+justify-content:center;
+}
+
+/* ALERTA */
+
+.alerta{
+position:fixed;
+top:-80px;
+left:50%;
+transform:translateX(-50%);
+background:var(--verde-bandeira);
+color:var(--amarelo-dourado);
+padding:14px 24px;
+border-radius:12px;
+font-weight:600;
+box-shadow:0 10px 30px rgba(0,0,0,0.25);
+transition:0.5s;
+z-index:3000;
+white-space:nowrap;
+}
+
+.alerta.show{top:30px;}
+
+</style>
+</head>
+
+<body>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="alerta" id="alerta"></div>
+
+<div class="popup" id="popupConfirm">
+<div class="popup-box">
+
+<p id="popupText"></p>
+
+<div class="popup-buttons">
+<button class="botao botao-verde" id="confirmSim">Sim</button>
+<button class="botao botao-vermelho" id="confirmNao">Não</button>
+</div>
+
+</div>
+</div>
+
+<div class="popup" id="popupSenha">
+<div class="popup-box">
+<p>Senhas diferentes!</p>
+<div class="popup-buttons">
+<button class="botao botao-azul" id="btnOk">Ok</button>
+</div>
+</div>
+</div>
+
+<div class="sidebar" id="sidebar">
+
+<h3>Ir para...</h3>
+
+<a href="/"><span class="material-symbols-outlined">home</span> Início</a>
+<a href="/vendas/"><span class="material-symbols-outlined">point_of_sale</span> Nova Venda</a>
+<a href="/vendas/editar"><span class="material-symbols-outlined">edit</span> Editar Venda</a>
+<a href="/clientes/cadastrar"><span class="material-symbols-outlined">group</span> Clientes</a>
+<a href="/extrato"><span class="material-symbols-outlined">receipt_long</span> Extrato / Pagamentos</a>
+<a href="/produtos"><span class="material-symbols-outlined">inventory_2</span> Produtos</a>
+<a href="/dashboard"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+<a href="/usuarios"><span class="material-symbols-outlined">admin_panel_settings</span> Usuários</a>
+
+</div>
+
+<div class="topo">
+<span class="material-symbols-outlined menu-icon" id="menuBtn">menu</span>
+<h1>Usuários do Sistema</h1>
+</div>
+
+<div class="container">
+
+<div class="bloco">
+
+<h2>Criar novo usuário</h2>
+
+<form id="formCriar" method="POST">
+
+<input type="text" name="usuario" placeholder="Usuário" required>
+
+<input type="password" id="senha1" name="senha" placeholder="Senha" required>
+
+<input type="password" id="senha2" placeholder="Confirmar senha" required>
+
+<select name="nivel" required>
+<option value="">Perfil</option>
+<option value="admin">Administrador</option>
+<option value="usuario">Usuário</option>
+</select>
+
+<button class="botao botao-verde">Criar usuário</button>
+
+</form>
+
+</div>
+
+<div class="bloco">
+
+<h2>Usuários cadastrados</h2>
+
+{% for u in usuarios %}
+
+<div class="usuario-card" data-usuario="{{u.usuario}}">
+
+<div class="usuario-info"><b>ID:</b> {{u.id}}</div>
+
+<div class="usuario-info">
+<b>Usuário:</b>
+<span class="nome">{{u.usuario}}</span>
+<input class="edit-user" style="display:none" value="{{u.usuario}}">
+</div>
+
+<div class="usuario-info">
+<b>Status:</b>
+<span class="status">
+{% if u.ativo %}
+<span class="status-ativo">Ativo</span>
+{% else %}
+<span class="status-inativo">Inativo</span>
+{% endif %}
+</span>
+</div>
+
+<input class="edit-pass" placeholder="Senha" type="password" style="display:none">
+<input class="edit-pass2" placeholder="Confirmar senha" type="password" style="display:none">
+
+<div class="botoes-usuario">
+
+<button class="botao botao-azul btnEditar">Editar</button>
+
+{% if u.ativo %}
+<button class="botao botao-vermelho btnToggle">Desativar</button>
+{% else %}
+<button class="botao botao-verde btnToggle">Ativar</button>
+{% endif %}
+
+<button class="botao botao-vermelho btnExcluir">Excluir</button>
+
+</div>
+
+<div class="botoes-usuario edit-buttons" style="display:none">
+
+<button class="botao botao-verde btnSalvar">Salvar</button>
+<button class="botao botao-vermelho btnCancelar">Cancelar</button>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<button class="botao botao-azul" style="margin-top:20px;display:flex;align-items:center;gap:6px" onclick="window.location.href='/'">
+<span class="material-symbols-outlined">arrow_back</span> Voltar
+</button>
+
+</div>
+
+<script>
+
+const alerta=document.getElementById("alerta");
+const popup=document.getElementById("popupConfirm");
+const popupSenha=document.getElementById("popupSenha");
+const popupText=document.getElementById("popupText");
+const btnSim=document.getElementById("confirmSim");
+const btnNao=document.getElementById("confirmNao");
+const btnOk=document.getElementById("btnOk");
+
+let acaoConfirmar=null;
+
+btnOk.onclick=()=>popupSenha.style.display="none";
+
+function mostrarAlerta(t){
+alerta.innerText=t;
+alerta.classList.add("show");
+
+setTimeout(()=>{
+alerta.classList.remove("show");
+
+document.querySelectorAll("button").forEach(b=>{
+b.disabled=false;
+});
+
+overlay.classList.remove("ativo");
+
+},2500);
+}
+
+function desativarBotoes(){
+document.querySelectorAll("button").forEach(b=>b.disabled=true);
+}
+
+function abrirPopup(texto,acao){
+popupText.innerText=texto;
+popup.style.display="flex";
+acaoConfirmar=acao;
+}
+
+btnNao.onclick=()=>popup.style.display="none";
+
+btnSim.onclick=()=>{
+popup.style.display="none";
+if(acaoConfirmar) acaoConfirmar();
+};
+
+/* SIDEBAR */
+
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("overlay");
+const menuBtn=document.getElementById("menuBtn");
+
+menuBtn.onclick=()=>{
+sidebar.classList.add("ativa");
+overlay.classList.add("ativo");
+};
+
+overlay.onclick=()=>{
+sidebar.classList.remove("ativa");
+overlay.classList.remove("ativo");
+};
+
+/* ALERTA POS-CADASTRO */
+
+const params=new URLSearchParams(window.location.search);
+if(params.get("sucesso")==="1"){
+mostrarAlerta("Usuário criado com sucesso!");
+}
+
+/* CRIAR USUARIO */
+
+document.getElementById("formCriar").addEventListener("submit",function(e){
+
+e.preventDefault();
+
+const s1=document.getElementById("senha1").value;
+const s2=document.getElementById("senha2").value;
+
+if(s1!==s2){
+popupSenha.style.display="flex";
+return;
+}
+
+abrirPopup("Cadastrar usuário?",()=>{
+overlay.classList.add("ativo");
+desativarBotoes();
+e.target.submit();
+});
+
+});
+
+/* EXCLUIR */
+
+document.querySelectorAll(".btnExcluir").forEach(btn=>{
+
+btn.onclick=function(){
+
+const card=this.closest(".usuario-card");
+const usuario=card.dataset.usuario;
+
+abrirPopup("Excluir usuário?",async()=>{
+
+desativarBotoes();
+
+await fetch("/usuarios/excluir",{
+method:"POST",
+headers:{'Content-Type':'application/x-www-form-urlencoded'},
+body:`usuario=${usuario}`
+});
+
+card.remove();
+
+mostrarAlerta("Operação realizada com sucesso!");
+
+});
+
+};
+
+});
+
+/* TOGGLE */
+
+document.querySelectorAll(".btnToggle").forEach(btn=>{
+
+btn.onclick=function(){
+
+const card=this.closest(".usuario-card");
+const usuario=card.dataset.usuario;
+
+const statusAtual=card.querySelector(".status").innerText.trim();
+const ativar=statusAtual==="Inativo";
+
+const textoPopup=ativar?"Ativar usuário?":"Desativar usuário?";
+
+abrirPopup(textoPopup,async()=>{
+
+desativarBotoes();
+
+await fetch("/usuarios/toggle",{
+method:"POST",
+headers:{'Content-Type':'application/x-www-form-urlencoded'},
+body:`usuario=${usuario}&ativo=${ativar}`
+});
+
+if(ativar){
+card.querySelector(".status").innerHTML='<span class="status-ativo">Ativo</span>';
+btn.innerText="Desativar";
+btn.classList.remove("botao-verde");
+btn.classList.add("botao-vermelho");
+mostrarAlerta("Usuário ativo!");
+}else{
+card.querySelector(".status").innerHTML='<span class="status-inativo">Inativo</span>';
+btn.innerText="Ativar";
+btn.classList.remove("botao-vermelho");
+btn.classList.add("botao-verde");
+mostrarAlerta("Usuário desativado!");
+}
+
+});
+
+};
+
+});
+
+/* EDITAR */
+
+document.querySelectorAll(".btnEditar").forEach(btn=>{
+
+btn.onclick=function(){
+
+const card=this.closest(".usuario-card");
+
+card.querySelector(".nome").style.display="none";
+card.querySelector(".edit-user").style.display="block";
+card.querySelector(".edit-pass").style.display="block";
+card.querySelector(".edit-pass2").style.display="block";
+
+card.querySelector(".botoes-usuario").style.display="none";
+card.querySelector(".edit-buttons").style.display="flex";
+
+};
+
+});
+
+document.querySelectorAll(".btnCancelar").forEach(btn=>{
+btn.onclick=()=>location.reload();
+});
+
+document.querySelectorAll(".btnSalvar").forEach(btn=>{
+
+btn.onclick=async function(){
+
+const card=this.closest(".usuario-card");
+
+const usuario_original=card.dataset.usuario;
+const usuario=card.querySelector(".edit-user").value;
+const senha=card.querySelector(".edit-pass").value;
+const senha2=card.querySelector(".edit-pass2").value;
+
+if(senha!==senha2){
+popupSenha.style.display="flex";
+return;
+}
+
+/* FECHA EDIÇÃO INLINE */
+
+card.querySelector(".edit-user").style.display="none";
+card.querySelector(".edit-pass").style.display="none";
+card.querySelector(".edit-pass2").style.display="none";
+card.querySelector(".edit-buttons").style.display="none";
+
+card.querySelector(".nome").style.display="inline";
+card.querySelector(".botoes-usuario").style.display="flex";
+
+/* GHOST PAGE */
+
+overlay.classList.add("ativo");
+desativarBotoes();
+
+await fetch("/usuarios/editar",{
+method:"POST",
+headers:{'Content-Type':'application/x-www-form-urlencoded'},
+body:`usuario_original=${usuario_original}&usuario=${usuario}&senha=${senha}`
+});
+
+card.querySelector(".nome").innerText=usuario;
+card.dataset.usuario=usuario;
+
+mostrarAlerta("Edição realizada!");
+
+};
+
+});
+
+</script>
+
+</body>
+</html>

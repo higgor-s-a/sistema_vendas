@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Extrato</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:#f4f6f9;
+}
+
+/* SIDEBAR PADRÃO */
+
+.sidebar{
+position:fixed;
+top:0;
+left:-260px;
+width:250px;
+height:100%;
+background:white;
+box-shadow:2px 0 20px rgba(0,0,0,0.15);
+transition:.3s;
+padding:25px 20px;
+z-index:1001;
+}
+
+.sidebar.ativa{left:0;}
+
+.sidebar h3{
+margin-top:0;
+font-weight:700;
+margin-bottom:25px;
+}
+
+.sidebar a{
+display:flex;
+align-items:center;
+gap:12px;
+text-decoration:none;
+color:#334155;
+padding:12px;
+border-radius:10px;
+font-weight:600;
+margin-bottom:8px;
+}
+
+.sidebar a:hover{
+background:#e2e8f0;
+}
+
+/* OVERLAY PADRÃO */
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.4);
+display:none;
+z-index:1000;
+}
+
+.overlay.ativo{display:block}
+
+/* CABEÇALHO PADRÃO */
+
+.topo{
+background:linear-gradient(90deg,#0ea5e9,#0284c7);
+color:white;
+padding:24px 18px 20px 18px;
+text-align:center;
+position:relative;
+box-shadow:0 6px 20px rgba(3,105,161,0.25);
+}
+
+.topo h1{
+margin:0;
+font-size:22px;
+font-weight:600;
+}
+
+.menu-icon{
+position:absolute;
+left:20px;
+top:22px;
+cursor:pointer;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:700px;
+margin:25px auto;
+padding:15px;
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:22px;
+border-radius:14px;
+box-shadow:0 8px 22px rgba(0,0,0,.08);
+margin-bottom:15px;
+}
+
+/* INPUT */
+
+input,select{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:16px;
+margin-top:6px;
+margin-bottom:12px;
+}
+
+/* BOTÕES */
+
+button{
+padding:12px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-size:15px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+width:100%;
+background:linear-gradient(135deg,#0ea5e9,#0284c7);
+color:white;
+}
+
+button:disabled{
+opacity:.45 !important;
+pointer-events:none !important;
+filter:grayscale(60%);
+}
+
+/* ALERTA */
+
+.alerta{
+position:fixed;
+top:-80px;
+left:50%;
+transform:translateX(-50%);
+background:#15803d;
+color:#facc15;
+padding:14px 28px;
+border-radius:10px;
+font-weight:700;
+white-space:nowrap;
+transition:.6s;
+z-index:6000;
+}
+
+.alerta.mostrar{
+top:20px;
+}
+
+/* AUTOCOMPLETE */
+
+.sugestoes{
+background:white;
+border:1px solid #ccc;
+border-radius:8px;
+display:none;
+max-height:150px;
+overflow-y:auto;
+}
+
+.sugestoes div{
+padding:10px;
+cursor:pointer;
+}
+
+.sugestoes div:hover{
+background:#f1f5f9;
+}
+
+/* EXTRATO */
+
+.bank{
+background:white;
+border-radius:18px;
+padding:20px;
+box-shadow:0 0 15px rgba(0,0,0,.08);
+}
+
+.extrato-cliente{
+text-align:center;
+font-weight:700;
+font-size:18px;
+margin-bottom:12px;
+}
+
+.mov{
+display:flex;
+justify-content:space-between;
+padding:10px 0;
+border-bottom:1px dashed #ddd;
+font-size:14px;
+}
+
+.credito{color:#16a34a;font-weight:600}
+.debito{color:#dc2626;font-weight:600}
+
+.saldo-box{
+text-align:center;
+margin-top:15px;
+}
+
+.saldo-label{
+font-size:14px;
+}
+
+.saldo-valor{
+font-size:26px;
+font-weight:700;
+}
+
+/* BOTÃO BAIXAR */
+
+.btn-download{
+margin-top:15px;
+}
+
+/* VOLTAR */
+
+.botao-voltar{
+display:inline-flex;
+align-items:center;
+gap:8px;
+margin-top:25px;
+padding:8px 14px;
+border-radius:10px;
+border:none;
+font-weight:520;
+font-size:14px;
+cursor:pointer;
+background:linear-gradient(135deg,#0ea5e9,#0284c7);
+color:white;
+width:auto;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="alerta" id="alerta">Pagamento registrado com sucesso!</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+
+<h3>Ir para...</h3>
+
+<a href="/"><span class="material-symbols-outlined">home</span> Início</a>
+<a href="/vendas/"><span class="material-symbols-outlined">point_of_sale</span> Nova Venda</a>
+<a href="/vendas/editar"><span class="material-symbols-outlined">edit_note</span> Editar Venda</a>
+<a href="/clientes/cadastrar"><span class="material-symbols-outlined">person_add</span> Clientes</a>
+<a href="/clientes/editar"><span class="material-symbols-outlined">edit</span> Editar Cliente</a>
+<a href="/produtos"><span class="material-symbols-outlined">inventory_2</span> Produtos</a>
+<a href="/dashboard"><span class="material-symbols-outlined">analytics</span> Dashboard</a>
+
+</div>
+
+<div class="topo">
+<span class="material-symbols-outlined menu-icon" onclick="abrirSidebar()">menu</span>
+<h1>Extrato</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h3>Extrato do Cliente</h3>
+
+<input type="text" id="clienteInput" placeholder="Digite o nome do cliente..." autocomplete="off">
+
+<div id="sugestoes" class="sugestoes">
+{% for c in clientes %}
+<div class="item-cliente" data-nome="{{ c.nome }}">{{ c.nome }}</div>
+{% endfor %}
+</div>
+
+<button id="btnExtrato" onclick="verExtrato()">
+<span class="material-symbols-outlined">search</span>
+Ver extrato
+</button>
+
+</div>
+
+{% if cliente %}
+
+<div class="card">
+
+<h3>Registrar pagamento</h3>
+
+<form method="POST" id="formPagamento">
+
+<input type="hidden" name="cliente" value="{{ cliente }}">
+
+<label>Valor</label>
+<input name="valor_pagamento" id="valor_pagamento" placeholder="R$ 0,00" required>
+
+<label>Forma de pagamento</label>
+
+<select name="forma_pagamento" required>
+<option value="">Selecione...</option>
+<option value="Pix">Pix</option>
+<option value="Dinheiro">Dinheiro</option>
+<option value="Cartão">Cartão</option>
+</select>
+
+<button id="btnSalvarPagamento">
+<span class="material-symbols-outlined">save</span>
+Salvar pagamento
+</button>
+
+</form>
+
+</div>
+
+<div class="bank" id="extratoImagem">
+
+<div class="extrato-cliente">{{ cliente }}</div>
+
+{% for e in extrato %}
+
+<div class="mov">
+
+<div>
+{{ e.data }}<br>
+<small>
+
+{% if e.tipo == "Venda" and e.produto %}
+Venda - {{ e.quantidade }}x {{ e.produto }}
+{% elif e.tipo == "Pagamento" %}
+Pagamento
+{% endif %}
+
+</small>
+
+</div>
+
+<div class="{% if e.valor > 0 %}credito{% else %}debito{% endif %}">
+{% if e.valor > 0 %}+{% endif %}
+R$ {{ "{:,.2f}".format(e.valor).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+
+</div>
+
+{% endfor %}
+
+<div class="saldo-box">
+
+<div class="saldo-label">Saldo devedor</div>
+
+<div class="saldo-valor">
+R$ {{ "{:,.2f}".format(saldo).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+
+</div>
+
+</div>
+
+<button class="btn-download" onclick="baixarImagem()">
+<span class="material-symbols-outlined">download</span>
+Baixar extrato
+</button>
+
+{% endif %}
+
+<button class="botao-voltar" onclick="window.location.href='/'">
+<span class="material-symbols-outlined">arrow_back</span>Voltar
+</button>
+
+</div>
+
+<script>
+
+function abrirSidebar(){
+sidebar.classList.add("ativa")
+overlay.classList.add("ativo")
+}
+
+function fecharSidebar(){
+sidebar.classList.remove("ativa")
+overlay.classList.remove("ativo")
+}
+
+overlay.onclick=fecharSidebar
+
+/* AUTOCOMPLETE */
+
+const input = document.getElementById("clienteInput")
+const sugestoes = document.getElementById("sugestoes")
+const itens = document.querySelectorAll(".item-cliente")
+
+if(input){
+
+input.addEventListener("input",function(){
+
+const valor=this.value.toLowerCase()
+
+let encontrou=false
+
+itens.forEach(item=>{
+
+const nome=item.dataset.nome.toLowerCase()
+
+if(valor!=="" && nome.includes(valor)){
+item.style.display="block"
+encontrou=true
+}else{
+item.style.display="none"
+}
+
+})
+
+sugestoes.style.display=encontrou?"block":"none"
+
+})
+
+}
+
+document.addEventListener("click",function(e){
+
+if(!e.target.closest("#clienteInput") && !e.target.closest("#sugestoes")){
+
+sugestoes.style.display="none"
+input.value=""
+
+}
+
+})
+
+itens.forEach(item=>{
+
+item.addEventListener("click",function(){
+
+input.value=this.dataset.nome
+sugestoes.style.display="none"
+
+})
+
+})
+
+function bloquearBotoes(){
+document.querySelectorAll("button").forEach(btn=>{
+btn.disabled=true
+})
+}
+
+function liberarBotoes(){
+document.querySelectorAll("button").forEach(btn=>{
+btn.disabled=false
+})
+}
+
+function verExtrato(){
+
+bloquearBotoes()
+
+const cliente=input.value
+
+if(cliente){
+window.location.href="?cliente="+encodeURIComponent(cliente)
+}
+
+}
+
+function mostrarAlerta(msg){
+
+const alerta=document.getElementById("alerta")
+
+alerta.innerText=msg
+alerta.classList.add("mostrar")
+
+setTimeout(()=>{
+alerta.classList.remove("mostrar")
+},2500)
+
+}
+
+const valorInput=document.getElementById("valor_pagamento")
+
+if(valorInput){
+
+valorInput.addEventListener("input",function(){
+
+let v=this.value.replace(/\D/g,'')
+
+if(v===""){
+this.value=""
+return
+}
+
+v=(v/100).toFixed(2)
+
+this.value="R$ "+v.replace(".",",")
+
+})
+
+}
+
+const form=document.getElementById("formPagamento")
+
+if(form){
+
+form.addEventListener("submit",function(){
+bloquearBotoes()
+})
+
+}
+
+function baixarImagem(){
+
+bloquearBotoes()
+
+const area=document.getElementById("extratoImagem")
+
+html2canvas(area).then(canvas=>{
+
+const link=document.createElement("a")
+
+link.download="extrato.png"
+
+link.href=canvas.toDataURL()
+
+link.click()
+
+liberarBotoes()
+
+})
+
+}
+
+</script>
+
+</body>
+</html>

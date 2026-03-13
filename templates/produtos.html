@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+
+<title>Produtos</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+<style>
+
+:root{
+--azul-principal:#0ea5e9;
+--azul-secundario:#0284c7;
+--cinza-bg:#f8fafc;
+--texto:#0f172a;
+--cinza-botao:#6b7280;
+--verde-bg:#15803d;
+--amarelo:#facc15;
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:var(--cinza-bg);
+}
+
+/* HEADER */
+
+.header{
+background:linear-gradient(90deg,var(--azul-principal),var(--azul-secundario));
+color:white;
+padding:16px;
+display:flex;
+align-items:center;
+gap:10px;
+box-shadow:0 4px 14px rgba(0,0,0,.2);
+}
+
+.header h1{
+margin:0;
+font-size:18px;
+font-weight:600;
+flex:1;
+text-align:center;
+}
+
+.menu-btn{
+cursor:pointer;
+font-size:26px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+top:0;
+left:-260px;
+width:250px;
+height:100%;
+background:white;
+box-shadow:2px 0 20px rgba(0,0,0,0.15);
+transition:.3s;
+padding:25px 20px;
+z-index:4000;
+}
+
+.sidebar.ativa{
+left:0;
+}
+
+.sidebar-titulo{
+margin-top:0;
+font-weight:700;
+margin-bottom:25px;
+}
+
+.sidebar a{
+display:flex;
+align-items:center;
+gap:12px;
+text-decoration:none;
+color:#334155;
+padding:12px;
+border-radius:10px;
+font-weight:600;
+margin-bottom:8px;
+}
+
+.sidebar a:hover{
+background:#e2e8f0;
+}
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.4);
+display:none;
+z-index:3000;
+}
+
+.overlay.ativo{
+display:block;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:900px;
+margin:30px auto;
+padding:15px;
+}
+
+.box{
+background:white;
+padding:22px;
+border-radius:16px;
+margin-bottom:20px;
+box-shadow:0 10px 25px rgba(15,23,42,0.08);
+}
+
+h3{
+margin-top:0;
+font-weight:600;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:6px;
+margin-bottom:14px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:15px;
+}
+
+button{
+padding:11px 16px;
+border:none;
+border-radius:10px;
+font-size:14px;
+font-weight:600;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+}
+
+button:disabled{
+opacity:.45 !important;
+pointer-events:none !important;
+filter:grayscale(60%);
+}
+
+.btn-cadastrar{
+background:linear-gradient(135deg,var(--azul-principal),var(--azul-secundario));
+color:white;
+width:100%;
+}
+
+.btn-editar{
+background:linear-gradient(135deg,#f59e0b,#ea580c);
+color:white;
+flex:1;
+}
+
+.btn-excluir{
+background:#ef4444;
+color:white;
+flex:1;
+}
+
+.btn-salvar{
+background:#16a34a;
+color:white;
+flex:1;
+}
+
+.btn-cancelar{
+background:var(--cinza-botao);
+color:white;
+flex:1;
+}
+
+.grid-produtos{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:16px;
+}
+
+.card{
+background:white;
+border-radius:16px;
+padding:18px;
+box-shadow:0 8px 22px rgba(0,0,0,0.08);
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+}
+
+.nome{
+font-size:17px;
+font-weight:600;
+}
+
+.preco{
+font-size:15px;
+color:var(--azul-secundario);
+margin-top:6px;
+font-weight:600;
+}
+
+.estoque{
+margin-top:4px;
+color:#64748b;
+font-size:14px;
+}
+
+.card-buttons{
+margin-top:14px;
+display:flex;
+gap:8px;
+width:100%;
+}
+
+/* ALERTA */
+
+.alerta{
+position:fixed;
+top:-80px;
+left:50%;
+transform:translateX(-50%);
+background:var(--verde-bg);
+color:var(--amarelo);
+padding:14px 28px;
+border-radius:10px;
+font-weight:700;
+white-space:nowrap;
+transition:.5s;
+z-index:6000;
+}
+
+.alerta.mostrar{
+top:20px;
+}
+
+/* POPUP */
+
+.popup{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+justify-content:center;
+align-items:center;
+z-index:5000;
+}
+
+.popup-content{
+background:white;
+padding:25px;
+border-radius:14px;
+text-align:center;
+min-width:260px;
+}
+
+.popup-buttons{
+display:flex;
+justify-content:center;
+gap:14px;
+margin-top:18px;
+}
+
+.botao-voltar{
+display:inline-flex;
+align-items:center;
+gap:8px;
+margin-top:30px;
+padding:8px 14px;
+border-radius:10px;
+font-weight:520;
+font-size:14px;
+cursor:pointer;
+background:linear-gradient(135deg,var(--azul-principal),var(--azul-secundario));
+color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="alerta mostrar" id="alerta">{{ messages[0] }}</div>
+{% else %}
+<div class="alerta" id="alerta"></div>
+{% endif %}
+{% endwith %}
+
+<div class="overlay" id="overlay" onclick="fecharSidebar()"></div>
+
+<div class="sidebar" id="sidebar">
+
+<div class="sidebar-titulo"><h3>Ir para...</h3></div>
+
+<a href="/"><span class="material-symbols-outlined">home</span>Início</a>
+<a href="/vendas"><span class="material-symbols-outlined">point_of_sale</span>Nova Venda</a>
+<a href="/vendas/editar"><span class="material-symbols-outlined">edit_note</span>Editar Venda</a>
+<a href="/clientes/cadastrar"><span class="material-symbols-outlined">groups</span>Clientes</a>
+<a href="/clientes/editar"><span class="material-symbols-outlined">edit</span>Editar Cliente</a>
+<a href="/extrato"><span class="material-symbols-outlined">payments</span>Extrato / Pagamentos</a>
+<a href="/dashboard"><span class="material-symbols-outlined">analytics</span>Dashboard</a>
+
+</div>
+
+<div class="header">
+<span class="material-symbols-outlined menu-btn" onclick="abrirSidebar()">menu</span>
+<h1>Produtos</h1>
+</div>
+
+<div class="container">
+
+<div class="box">
+
+<h3>Cadastrar Produto</h3>
+
+<form method="POST" action="/produtos" id="formProduto">
+
+<input name="nome" placeholder="Nome do produto..." required>
+
+<input name="preco" id="precoInput" value="R$ 0,00" required>
+
+<input name="estoque" type="number" placeholder="Quantidade..." required>
+
+<button class="btn-cadastrar">
+<span class="material-symbols-outlined">add</span>
+Cadastrar produto
+</button>
+
+</form>
+
+</div>
+
+<div class="grid-produtos">
+
+{% for p in produtos %}
+
+<div class="card">
+
+<div class="nome">{{p.nome}}</div>
+
+<div class="preco">
+R$ {{ "{:,.2f}".format(p.preco|float).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+
+<div class="estoque">
+Estoque: {{p.estoque}}
+</div>
+
+<div class="card-buttons">
+
+<button class="btn-editar editarBtn">Editar</button>
+
+<button class="btn-excluir excluirBtn"
+data-url="/excluir_produto/{{p.nome}}">
+Excluir</button>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<button class="botao-voltar" onclick="window.location.href='/'">
+<span class="material-symbols-outlined">arrow_back</span>
+Voltar
+</button>
+
+</div>
+
+<!-- POPUP EXCLUIR -->
+
+<div class="popup" id="popupExcluir">
+
+<div class="popup-content">
+
+<p>Excluir produto?</p>
+
+<div class="popup-buttons">
+<button class="btn-excluir" id="btnSim">Sim</button>
+<button class="btn-cancelar" id="btnNao">Não</button>
+</div>
+
+</div>
+
+</div>
+
+<!-- POPUP CADASTRAR -->
+
+<div class="popup" id="popupCadastrar">
+
+<div class="popup-content">
+
+<p>Cadastrar produto?</p>
+
+<div class="popup-buttons">
+<button class="btn-salvar" id="confirmarCadastro">Ok</button>
+<button class="btn-cancelar" id="cancelarCadastro">Cancelar</button>
+</div>
+
+</div>
+
+</div>
+
+<!-- POPUP EDITAR -->
+
+<div class="popup" id="popupEditar">
+
+<div class="popup-content">
+
+<p>Salvar edição?</p>
+
+<div class="popup-buttons">
+<button class="btn-salvar" id="confirmarEdicao">Ok</button>
+<button class="btn-cancelar" id="cancelarEdicao">Cancelar</button>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const alertaBox=document.getElementById("alerta")
+
+if(alertaBox.classList.contains("mostrar")){
+setTimeout(()=>alertaBox.classList.remove("mostrar"),2500)
+}
+
+function ghostButtons(){
+document.querySelectorAll("button").forEach(b=>b.disabled=true)
+}
+
+/* SIDEBAR */
+
+function abrirSidebar(){
+sidebar.classList.add("ativa")
+overlay.classList.add("ativo")
+}
+
+function fecharSidebar(){
+sidebar.classList.remove("ativa")
+overlay.classList.remove("ativo")
+}
+
+/* MASCARA */
+
+function mascaraPreco(input){
+
+input.addEventListener("input",function(){
+
+let v=this.value.replace(/\D/g,'')
+
+if(v==="")v="0"
+
+v=(v/100).toFixed(2)
+
+this.value="R$ "+v.replace(".",",")
+
+})
+
+}
+
+const precoInput=document.getElementById("precoInput")
+
+mascaraPreco(precoInput)
+
+/* CADASTRAR */
+
+const formProduto=document.getElementById("formProduto")
+const popupCadastrar=document.getElementById("popupCadastrar")
+
+formProduto.addEventListener("submit",function(e){
+
+e.preventDefault()
+
+popupCadastrar.style.display="flex"
+
+})
+
+document.getElementById("cancelarCadastro").onclick=function(){
+
+popupCadastrar.style.display="none"
+
+}
+
+document.getElementById("confirmarCadastro").onclick=function(){
+
+ghostButtons()
+
+let valor=precoInput.value
+.replace("R$","")
+.replace(",",".")
+.trim()
+
+precoInput.value=parseFloat(valor)
+
+formProduto.submit()
+
+}
+
+/* EDITAR */
+
+let formEditar=null
+let editPrecoInput=null
+
+document.querySelectorAll(".editarBtn").forEach(btn=>{
+
+btn.onclick=function(){
+
+const card=this.closest(".card")
+
+const nome=card.querySelector(".nome").innerText
+const preco=card.querySelector(".preco").innerText.replace("R$","").trim()
+const estoque=card.querySelector(".estoque").innerText.replace("Estoque:","").trim()
+
+card.innerHTML=`
+
+<form method="POST" action="/editar_produto/${nome}" class="formEditar">
+
+<input name="nome" value="${nome}" required>
+
+<input name="preco" class="editPreco" value="R$ ${preco}" required>
+
+<input name="estoque" type="number" value="${estoque}" required>
+
+<div class="card-buttons">
+
+<button class="btn-salvar salvarBtn">
+<span class="material-symbols-outlined">save</span>
+Salvar
+</button>
+
+<button type="button" class="btn-cancelar cancelarEdit">
+<span class="material-symbols-outlined">close</span>
+Cancelar
+</button>
+
+</div>
+
+</form>
+`
+
+const editPreco=card.querySelector(".editPreco")
+
+mascaraPreco(editPreco)
+
+formEditar=card.querySelector(".formEditar")
+editPrecoInput=editPreco
+
+formEditar.addEventListener("submit",function(e){
+
+e.preventDefault()
+
+document.getElementById("popupEditar").style.display="flex"
+
+})
+
+card.querySelector(".cancelarEdit").onclick=function(){
+ghostButtons()
+location.reload()
+}
+
+}
+
+})
+
+document.getElementById("cancelarEdicao").onclick=function(){
+
+document.getElementById("popupEditar").style.display="none"
+
+}
+
+document.getElementById("confirmarEdicao").onclick=function(){
+
+ghostButtons()
+
+let v=editPrecoInput.value
+.replace("R$","")
+.replace(",",".")
+.trim()
+
+editPrecoInput.value=parseFloat(v)
+
+formEditar.submit()
+
+}
+
+/* EXCLUIR */
+
+let urlExcluir=null
+
+document.querySelectorAll(".excluirBtn").forEach(btn=>{
+
+btn.onclick=function(){
+
+urlExcluir=this.dataset.url
+document.getElementById("popupExcluir").style.display="flex"
+
+}
+
+})
+
+document.getElementById("btnNao").onclick=function(){
+
+document.getElementById("popupExcluir").style.display="none"
+
+}
+
+document.getElementById("btnSim").onclick=function(){
+
+ghostButtons()
+
+window.location.href=urlExcluir
+
+}
+
+</script>
+
+</body>
+</html>

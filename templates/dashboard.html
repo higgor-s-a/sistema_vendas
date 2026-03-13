@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+
+<title>Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:#f8fafc;
+}
+
+/* HEADER */
+
+.header{
+background:linear-gradient(90deg,#0ea5e9,#0284c7);
+color:white;
+padding:16px;
+display:flex;
+align-items:center;
+gap:10px;
+box-shadow:0 4px 14px rgba(0,0,0,.2);
+}
+
+.header h1{
+margin:0;
+font-size:25px;
+font-weight:600;
+flex:1;
+text-align:center;
+}
+
+.menu-btn{
+cursor:pointer;
+font-size:26px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+top:0;
+left:-260px;
+width:260px;
+height:100%;
+background:white;
+box-shadow:4px 0 20px rgba(0,0,0,.15);
+padding-top:20px;
+transition:.25s;
+z-index:4000;
+}
+
+.sidebar.ativa{left:0;}
+
+.sidebar-titulo{
+font-weight:700;
+padding:0 18px 10px 18px;
+margin-top:0;
+}
+
+.sidebar a{
+display:flex;
+align-items:center;
+gap:12px;
+padding:14px 18px;
+text-decoration:none;
+color:#0f172a;
+font-weight:500;
+border-radius:0 20px 20px 0;
+margin-right:8px;
+}
+
+.sidebar a:hover{
+background:#f1f5f9;
+}
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.2);
+display:none;
+z-index:3000;
+}
+
+.overlay.ativo{display:block;}
+
+/* CONTAINER */
+
+.container{
+max-width:1100px;
+margin:30px auto;
+padding:15px;
+}
+
+.titulo{
+font-size:22px;
+font-weight:600;
+margin-bottom:30px;
+}
+
+/* FILTRO */
+
+.filtro{
+background:white;
+padding:18px;
+border-radius:14px;
+box-shadow:0 8px 22px rgba(0,0,0,.08);
+margin-bottom:20px;
+}
+
+.filtro label{
+display:block;
+margin-top:10px;
+margin-bottom:6px;
+}
+
+.filtro input{
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+/* BOTÕES */
+
+.filtro-botoes{
+display:none;
+justify-content:center;
+gap:10px;
+margin-top:12px;
+}
+
+.filtro-botoes .btn{
+flex:1;
+max-width:200px;
+justify-content:center;
+white-space:nowrap;
+}
+
+.btn{
+padding:10px 16px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:600;
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+.btn-pesquisar{
+background:#0284c7;
+color:white;
+}
+
+.btn-limpar{
+background:#64748b;
+color:white;
+}
+
+/* GRID */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:18px;
+}
+
+.card{
+background:white;
+border-radius:16px;
+padding:22px;
+box-shadow:0 8px 22px rgba(0,0,0,0.08);
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+}
+
+.card h4{
+margin:0;
+font-size:14px;
+color:#777;
+}
+
+.valor{
+font-size:22px;
+font-weight:700;
+margin-top:10px;
+}
+
+.verde{color:#16a34a}
+.azul{color:#0284c7}
+.vermelho{color:#dc2626}
+.roxo{color:#7c3aed}
+
+/* GRAFICO */
+
+.graficos{
+margin-top:30px;
+}
+
+.grafico{
+background:white;
+padding:20px;
+border-radius:14px;
+box-shadow:0 8px 22px rgba(0,0,0,.08);
+}
+
+/* VOLTAR */
+
+.botao-voltar{
+display:inline-flex;
+align-items:center;
+gap:8px;
+margin-top:30px;
+padding:8px 14px;
+border-radius:10px;
+font-weight:520;
+font-size:14px;
+cursor:pointer;
+background:linear-gradient(135deg,#0ea5e9,#0284c7);
+color:white;
+text-decoration:none;
+}
+
+</style>
+</head>
+
+<body
+data-nomes='{{ ranking_nomes | tojson | safe }}'
+data-quantidades='{{ ranking_quantidades | tojson | safe }}'
+data-filtro="{{ data_filtro or '' }}"
+>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+
+<div class="sidebar-titulo"><h3>Ir para...</h3></div>
+
+<a href="/"><span class="material-symbols-outlined">home</span>Início</a>
+<a href="/vendas"><span class="material-symbols-outlined">point_of_sale</span>Nova Venda</a>
+<a href="/vendas/editar"><span class="material-symbols-outlined">edit_note</span>Editar Venda</a>
+<a href="/clientes/cadastrar"><span class="material-symbols-outlined">groups</span>Clientes</a>
+<a href="/clientes/editar"><span class="material-symbols-outlined">edit</span>Editar Cliente</a>
+<a href="/extrato"><span class="material-symbols-outlined">payments</span>Extrato / Pagamentos</a>
+<a href="/produtos"><span class="material-symbols-outlined">inventory_2</span>Produtos</a>
+
+</div>
+
+<div class="header">
+<span class="material-symbols-outlined menu-btn" id="menuBtn">menu</span>
+<h1>Dashboard</h1>
+</div>
+
+<div class="container">
+
+<div class="titulo">Dashboard Financeiro</div>
+
+<div class="filtro">
+
+<label>Filtrar por data específica</label>
+
+<input type="date" id="filtroData" value="{{ data_filtro or '' }}">
+
+<div class="filtro-botoes" id="botoesFiltro">
+
+<button class="btn btn-pesquisar" id="btnPesquisar">
+<span class="material-symbols-outlined">search</span>
+Pesquisar
+</button>
+
+<button class="btn btn-limpar" id="btnLimpar">
+<span class="material-symbols-outlined">delete</span>
+Limpar campo
+</button>
+
+</div>
+
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h4>Faturamento Total</h4>
+<div class="valor azul">
+R$ {{ "{:,.2f}".format(faturamento).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+</div>
+
+<div class="card">
+<h4>Total Recebido</h4>
+<div class="valor verde">
+R$ {{ "{:,.2f}".format(recebido).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+</div>
+
+<div class="card">
+<h4>Pagamentos via PIX</h4>
+<div class="valor azul">
+R$ {{ "{:,.2f}".format(recebido_pix).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+</div>
+
+<div class="card">
+<h4>Pagamentos em Dinheiro</h4>
+<div class="valor verde">
+R$ {{ "{:,.2f}".format(recebido_dinheiro).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+</div>
+
+<div class="card">
+<h4>Saldo em Aberto</h4>
+<div class="valor {{ 'vermelho' if saldo > 0 else 'verde' }}">
+R$ {{ "{:,.2f}".format(saldo).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+</div>
+
+<div class="card">
+<h4>Total de Vendas</h4>
+<div class="valor roxo">
+{{ total_vendas }}
+</div>
+</div>
+
+<div class="card">
+<h4>Ticket Médio</h4>
+<div class="valor azul">
+R$ {{ "{:,.2f}".format(ticket).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+</div>
+
+<div class="card">
+<h4>Lucro Estimado</h4>
+<div class="valor verde">
+R$ {{ "{:,.2f}".format(lucro_estimado).replace(",", "X").replace(".", ",").replace("X", ".") }}
+</div>
+</div>
+
+</div>
+
+<div class="graficos">
+<div class="grafico">
+<canvas id="graficoRanking"></canvas>
+</div>
+</div>
+
+<a class="botao-voltar" href="/">
+<span class="material-symbols-outlined">arrow_back</span>
+Voltar
+</a>
+
+</div>
+
+<script>
+
+const sidebar=document.getElementById("sidebar")
+const overlay=document.getElementById("overlay")
+const menuBtn=document.getElementById("menuBtn")
+
+menuBtn.onclick=()=>{
+sidebar.classList.add("ativa")
+overlay.classList.add("ativo")
+}
+
+overlay.onclick=()=>{
+sidebar.classList.remove("ativa")
+overlay.classList.remove("ativo")
+}
+
+const dataInput=document.getElementById("filtroData")
+const botoes=document.getElementById("botoesFiltro")
+
+if(document.body.dataset.filtro){
+botoes.style.display="flex"
+}
+
+dataInput.addEventListener("change",function(){
+if(this.value){
+botoes.style.display="flex"
+}
+})
+
+function ghostButtons(){
+document.querySelectorAll("button").forEach(btn=>{
+btn.disabled=true
+btn.style.opacity="0.5"
+})
+}
+
+document.getElementById("btnPesquisar").onclick=function(){
+const data=dataInput.value
+if(!data)return
+ghostButtons()
+window.location.href="/dashboard?data="+data
+}
+
+document.getElementById("btnLimpar").onclick=function(){
+
+dataInput.value=""
+
+ghostButtons()
+
+window.location.href="/dashboard"
+}
+
+const nomes=JSON.parse(document.body.dataset.nomes)
+const quantidades=JSON.parse(document.body.dataset.quantidades)
+
+new Chart(document.getElementById("graficoRanking"),{
+type:"bar",
+data:{
+labels:nomes,
+datasets:[{
+label:"Produtos mais vendidos",
+data:quantidades
+}]
+}
+})
+
+</script>
+
+</body>
+</html>

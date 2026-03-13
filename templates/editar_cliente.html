@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editar Cliente</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<style>
+:root{
+    --azul-principal:#0ea5e9;
+    --azul-secundario:#0284c7;
+    --cinza-bg:#f4f6f9;
+    --texto:#0f172a;
+    --cinza-botao:#9ca3af;
+    --verde-bg:#0f5132;
+    --amarelo:#facc15;
+}
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background:var(--cinza-bg);
+}
+
+/* SIDEBAR */
+.sidebar{
+    position:fixed;
+    top:0;
+    left:-260px;
+    width:250px;
+    height:100%;
+    background:white;
+    box-shadow:2px 0 20px rgba(0,0,0,0.15);
+    transition:.3s;
+    padding:25px 20px;
+    z-index:1001;
+}
+.sidebar.ativa{ left:0 }
+
+.sidebar h3{
+    margin-top:0;
+    font-weight:700;
+    margin-bottom:25px;
+}
+
+.sidebar a{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-decoration:none;
+    color:#334155;
+    padding:12px;
+    border-radius:10px;
+    font-weight:600;
+    margin-bottom:8px;
+}
+.sidebar a:hover{
+    background:#e2e8f0;
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.4);
+    display:none;
+    z-index:1000;
+}
+.overlay.ativo{ display:block }
+
+/* TOPO */
+.topo{
+    background:linear-gradient(90deg,var(--azul-principal),var(--azul-secundario));
+    color:white;
+    padding:24px 18px 20px 18px;
+    text-align:center;
+    position:relative;
+    box-shadow:0 6px 20px rgba(3,105,161,0.25);
+}
+.topo h1{
+    margin:0;
+    font-size:22px;
+    font-weight:600;
+}
+.menu-icon{
+    position:absolute;
+    left:20px;
+    top:22px;
+    cursor:pointer;
+}
+
+/* CONTAINER */
+.container{
+    max-width:700px;
+    width:90%;
+    margin:30px auto;
+}
+.bloco{
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 14px 35px rgba(0,0,0,0.08);
+}
+input{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #d1d5db;
+    margin-bottom:20px;
+    font-size: large;
+    font-weight: 400;
+}
+
+/* LISTA */
+.lista{
+    max-height:200px;
+    overflow-y:auto;
+    display:none;
+}
+.item{
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:8px;
+    cursor:pointer;
+    border:1px solid #e5e7eb;
+}
+.item:hover{ background:#f1f5f9 }
+
+/* BOTÕES */
+.botao{
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    font-weight:600;
+    cursor:pointer;
+    flex:1;
+    font-size: large;
+}
+.botao-primario{
+    background:linear-gradient(135deg,#0ea5e9,#0284c7);
+    color:white;
+}
+.botao-secundario{
+    background:var(--cinza-botao);
+    color:white;
+}
+.ghost{
+    opacity:.5;
+    pointer-events:none;
+}
+.botoes{
+    display:flex;
+    gap:10px;
+}
+
+/* BOTÃO VOLTAR */
+.botao-voltar{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:25px;
+    padding:12px 18px;
+    border-radius:12px;
+    border:none;
+    font-weight:520;
+    font-size: large;
+    cursor:pointer;
+    background:linear-gradient(135deg,#0ea5e9,#0284c7);
+    color:white;
+}
+
+/* ALERTA */
+.alerta{
+    display:none;
+    position:fixed;
+    top:15px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--verde-bg);
+    color:var(--amarelo);
+    padding:12px 20px;
+    border-radius:12px;
+    font-weight:700;
+    z-index:2000;
+    white-space: nowrap;
+}
+
+/* POPUP */
+.popup{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:1500;
+}
+.popup-content{
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    width:90%;
+    max-width:400px;
+    font-size: large;
+    font-weight: 600;
+    text-align: center;
+}
+.popup-buttons{
+    display:flex;
+    gap:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+<h3>Ir para...</h3>
+
+<a href="/"><span class="material-symbols-outlined">home</span> Início</a>
+<a href="/vendas/"><span class="material-symbols-outlined">point_of_sale</span> Nova Venda</a>
+<a href="/vendas/editar"><span class="material-symbols-outlined">edit_note</span> Editar Venda</a>
+<a href="/clientes/cadastrar"><span class="material-symbols-outlined">person_add</span> Clientes</a>
+<a href="/extrato"><span class="material-symbols-outlined">payments</span> Extrato / Pagamentos</a>
+<a href="/produtos"><span class="material-symbols-outlined">inventory_2</span> Produtos</a>
+<a href="/dashboard"><span class="material-symbols-outlined">analytics</span> Dashboard</a>
+
+</div>
+
+<div class="alerta" id="alertaMsg"></div>
+
+<div class="topo">
+<span class="material-symbols-outlined menu-icon" id="menuBtn">menu</span>
+<h1>Editar Cliente</h1>
+</div>
+
+<div class="container">
+<div class="bloco">
+<h2>Buscar Cliente</h2>
+<input type="text" id="busca" placeholder="Digite o nome do cliente...">
+<div id="resultados" class="lista">
+{% for c in clientes %}
+<div class="item" data-nome="{{ c.nome }}" data-telefone="{{ c.telefone }}">
+<strong>{{ c.nome }}</strong><br>{{ c.telefone }}
+</div>
+{% endfor %}
+</div>
+
+<div class="botoes" id="acoesCliente" style="display:none;">
+<button class="botao botao-primario" id="btnEditar">Editar</button>
+</div>
+</div>
+
+<button class="botao-voltar" onclick="window.location.href='/'">
+<span class="material-symbols-outlined">arrow_back</span> Voltar
+</button>
+</div>
+
+<!-- POPUP EDITAR -->
+<div class="popup" id="popupEditar">
+<div class="popup-content">
+<h3>Editar Cliente</h3>
+<input type="text" id="nomeEditar">
+<input type="text" id="telefoneEditar">
+<div class="popup-buttons">
+<button class="botao botao-primario" id="salvarEditar">Salvar</button>
+<button class="botao botao-secundario" id="cancelarEditar">Cancelar</button>
+</div>
+</div>
+</div>
+
+<!-- POPUP CONFIRMAR -->
+<div class="popup" id="popupConfirm">
+<div class="popup-content">
+<p>Deseja salvar alterações?</p>
+<div class="popup-buttons">
+<button class="botao botao-primario" id="confirmSim">Sim</button>
+<button class="botao botao-secundario" id="confirmNao">Não</button>
+</div>
+</div>
+</div>
+
+<!-- POPUP ERRO TELEFONE -->
+<div class="popup" id="popupErroTel">
+<div class="popup-content">
+<p>Número de telefone incorreto!</p>
+<div class="popup-buttons">
+<button class="botao botao-primario" id="okErroTel">OK</button>
+</div>
+</div>
+</div>
+
+<script>
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("overlay");
+const menuBtn=document.getElementById("menuBtn");
+
+menuBtn.onclick=()=>{
+    sidebar.classList.add("ativa");
+    overlay.classList.add("ativo");
+};
+overlay.onclick=()=>{
+    sidebar.classList.remove("ativa");
+    overlay.classList.remove("ativo");
+};
+
+const busca=document.getElementById("busca");
+const resultados=document.getElementById("resultados");
+const acoes=document.getElementById("acoesCliente");
+const btnEditar=document.getElementById("btnEditar");
+
+let cliente=null;
+
+busca.addEventListener("input",()=>{
+    const termo=busca.value.toLowerCase();
+    let algum=false;
+
+    cliente=null;
+    acoes.style.display="none";
+
+    resultados.querySelectorAll(".item").forEach(item=>{
+        if(item.dataset.nome.toLowerCase().includes(termo) && termo.length>0){
+            item.style.display="block";
+            algum=true;
+        }else{
+            item.style.display="none";
+        }
+    });
+
+    resultados.style.display=algum?"block":"none";
+});
+
+resultados.onclick=e=>{
+    const item=e.target.closest(".item");
+    if(!item) return;
+
+    busca.value=item.dataset.nome;
+    cliente=item.dataset;
+    resultados.style.display="none";
+    acoes.style.display="flex";
+};
+
+document.addEventListener("click",e=>{
+    if(!busca.contains(e.target) && !resultados.contains(e.target)){
+        resultados.style.display="none";
+    }
+});
+
+/* MÁSCARA TELEFONE */
+const telInput=document.getElementById("telefoneEditar");
+function formatMask(value){
+    let n=value.replace(/\D/g,"").substring(0,11);
+    let mask="(__) _ ____-____";
+    let i=0;
+    return mask.replace(/_/g,_=>n[i++]||"_");
+}
+telInput.addEventListener("input",e=>{
+    const pos=e.target.selectionStart;
+    e.target.value=formatMask(e.target.value);
+    e.target.setSelectionRange(pos,pos);
+});
+
+btnEditar.onclick=()=>{
+    if(!cliente) return;
+    document.getElementById("nomeEditar").value=cliente.nome;
+    telInput.value=formatMask(cliente.telefone||"");
+    popupEditar.style.display="flex";
+};
+
+cancelarEditar.onclick=()=>popupEditar.style.display="none";
+
+salvarEditar.onclick=()=>{
+    const numeros=telInput.value.replace(/\D/g,"");
+    if(numeros.length!==0 && numeros.length!==11){
+        popupErroTel.style.display="flex";
+        return;
+    }
+    popupConfirm.style.display="flex";
+};
+
+okErroTel.onclick=()=>popupErroTel.style.display="none";
+confirmNao.onclick=()=>popupConfirm.style.display="none";
+
+confirmSim.onclick=()=>{
+    confirmSim.classList.add("ghost");
+    confirmNao.classList.add("ghost");
+
+    const numeros=telInput.value.replace(/\D/g,"");
+    const telFormatado=numeros.length===11?
+    `(${numeros.substring(0,2)}) ${numeros[2]} ${numeros.substring(3,7)}-${numeros.substring(7)}`:"";
+
+    fetch("/clientes/editar",{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:new URLSearchParams({
+            nome_original:cliente.nome,
+            novo_nome:document.getElementById("nomeEditar").value,
+            novo_telefone:telFormatado
+        })
+    }).then(()=>{
+        popupConfirm.style.display="none";
+        popupEditar.style.display="none";
+        mostrarMensagem("Cliente editado com sucesso!");
+        setTimeout(()=>location.reload(),1500);
+    });
+};
+
+function mostrarMensagem(msg){
+    alertaMsg.textContent=msg;
+    alertaMsg.style.display="block";
+    setTimeout(()=>alertaMsg.style.display="none",2500);
+}
+</script>
+
+</body>
+</html>
