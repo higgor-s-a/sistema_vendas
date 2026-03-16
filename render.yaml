@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: sistema-vendas
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python webapp.py
+    envVars:
+      - key: SECRET_KEY
+        sync: false  # Configure manual
+      - key: DEMO_MODE
+        value: "false"
+      # Adicione outras Google vars manualmente
+      # Render detecta portas HTTP auto; app escuta 0.0.0.0:5000 por default com env PORT
+

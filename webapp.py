@@ -42,12 +42,14 @@ app.register_blueprint(usuarios_bp)
 # ERROR HANDLERS
 # =========================
 
+
 @app.errorhandler(500)
 def internal_error(error):
     print(f"Erro 500: {str(error)}")
     import traceback
     print(traceback.format_exc())
     return "Erro interno do servidor", 500
+
 
 @app.errorhandler(Exception)
 def handle_exception(error):
@@ -171,4 +173,5 @@ def logout():
 # =========================
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
