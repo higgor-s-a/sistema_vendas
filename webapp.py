@@ -1,4 +1,5 @@
 from flask import Flask, session, redirect, request, render_template
+import os
 from services.auth_service import autenticar
 from services.log_service import registrar_log
 
@@ -16,7 +17,13 @@ from usuarios import usuarios_bp
 # =========================
 
 app = Flask(__name__)
-app.secret_key = "chave_super_secreta"
+app.secret_key = os.environ.get('SECRET_KEY', 'chave_super_secreta')
+
+# Configurações para ambiente serverless (Vercel)
+# Remove configurações de sessão que podem causar problemas
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+# Não define SESSION_TYPE para usar o padrão (cookies)
 
 
 # =========================
@@ -32,8 +39,27 @@ app.register_blueprint(dashboard_bp)
 app.register_blueprint(usuarios_bp)
 
 # =========================
+# ERROR HANDLERS
+# =========================
+
+@app.errorhandler(500)
+def internal_error(error):
+    print(f"Erro 500: {str(error)}")
+    import traceback
+    print(traceback.format_exc())
+    return "Erro interno do servidor", 500
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+    print(f"Erro geral: {str(error)}")
+    import traceback
+    print(traceback.format_exc())
+    return "Erro interno do servidor", 500
+
+# =========================
 # PROTEÇÃO GLOBAL DE LOGIN
 # =========================
+
 
 @app.before_request
 def proteger_rotas():
@@ -83,28 +109,38 @@ def login():
 
     if request.method == "POST":
 
-        usuario = request.form["usuario"]
-        senha = request.form["senha"]
+        try:
+            usuario = request.form["usuario"]
+            senha = request.form["senha"]
 
-        user = autenticar(usuario, senha)
+            user = autenticar(usuario, senha)
 
-        if user:
+            if user:
+                session["usuario_id"] = user["id"]
+                session["usuario_nome"] = user["usuario"]
+                session["usuario_nivel"] = user["nivel"]
 
-            session["usuario_id"] = user["id"]
-            session["usuario_nome"] = user["usuario"]
-            session["usuario_nivel"] = user["nivel"]
+                # REGISTRA LOG
+                try:
+                    registrar_log(
+                        user["usuario"],
+                        "login",
+                        "acesso ao sistema"
+                    )
+                except Exception as log_error:
+                    print(f"Erro ao registrar log: {log_error}")
+                    # Não falha o login por causa do log
 
-            # REGISTRA LOG
-            registrar_log(
-                user["usuario"],
-                "login",
-                "acesso ao sistema"
-            )
+                return redirect("/")
 
-            return redirect("/")
+            else:
+                erro = "Usuário ou senha inválidos"
 
-        else:
-            erro = "Usuário ou senha inválidos"
+        except Exception as e:
+            print(f"Erro durante login: {str(e)}")
+            import traceback
+            print(traceback.format_exc())
+            erro = "Erro interno do servidor. Tente novamente."
 
     return render_template("login.html", erro=erro)
 

@@ -1,6 +1,9 @@
 import gspread
 import time
+import json
+import os
 from google.oauth2.service_account import Credentials
+
 
 def conectar_sheet():
 
@@ -13,10 +16,20 @@ def conectar_sheet():
                 "https://www.googleapis.com/auth/drive"
             ]
 
-            creds = Credentials.from_service_account_file(
-                "database/credenciais.json",
-                scopes=scope
-            )
+            # Tenta usar variável de ambiente primeiro (para Vercel)
+            creds_json = os.getenv('GOOGLE_SHEETS_CREDENTIALS')
+
+            if creds_json:
+                # Carrega credenciais da variável de ambiente
+                creds_dict = json.loads(creds_json)
+                creds = Credentials.from_service_account_info(
+                    creds_dict, scopes=scope)
+            else:
+                # Fallback para arquivo local (desenvolvimento)
+                creds = Credentials.from_service_account_file(
+                    "database/credenciais.json",
+                    scopes=scope
+                )
 
             client = gspread.authorize(creds)
 
@@ -24,7 +37,8 @@ def conectar_sheet():
 
         except Exception as e:
 
-            print("Erro Google Sheets, tentando novamente...", tentativa+1)
+            print(
+                f"Erro ao conectar ao Google Sheets (tentativa {tentativa+1}): {str(e)}")
 
             time.sleep(2)
 
