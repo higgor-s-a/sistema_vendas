@@ -1,0 +1,53 @@
+# Arquivos e pastas a serem ignorados pelo Git
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# Arquivos de desenvolvimento
+test.py
+test_sheets.py
+test_deploy.py
+
+# Credenciais - NUNCA commite estas arquivos!
+database/credenciais.json
+database/*.json
+*.key
+*.pem
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.bak
+
+# Logs
+logs/
+*.log
+
+# Ambiente virtual
+.env
+.env.local
+.env.production
+.env.staging
