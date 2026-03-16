@@ -10,9 +10,10 @@
 ## ✅ 3. Preparar para Render
 - [x] Criado Procfile e render.yaml
 - [x] Atualizado webapp.py para bind 0.0.0.0:$PORT (Render compatível)
-- [ ] Push para Git repo público/privado (.env já em .gitignore)
-- [ ] Render → New Web Service → Connect repo → Use render.yaml ou set Build/Start cmds
-- [ ] Environment: Copie vars do .env (PRIVATE_KEY multi-line!)
+- [x] Criado test_sheets_render.py para teste conexão Sheets
+- [ ] Deploy feito, app em https://sistema-vendas-82e0.onrender.com
+- [ ] Fix PRIVATE_KEY no Render dashboard (remover \\ escapes)
+
 
 ## ☐ 4. Deploy e Teste
 - Deploy automático via Git
