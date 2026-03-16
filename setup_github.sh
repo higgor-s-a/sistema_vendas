@@ -1,0 +1,23 @@
+#!/bin/bash
+echo "=== Configuração do Novo Repositório GitHub ==="
+echo ""
+echo "1. Crie um NOVO repositório no GitHub:"
+echo "   - Nome: sistema_vendas"
+echo "   - Visibilidade: Público ou Privado (recomendo Privado por segurança)"
+echo "   - NÃO marque 'Add a README file'"
+echo ""
+echo "2. Copie a URL do repositório criado"
+echo ""
+read -p "Cole a URL do seu novo repositório GitHub: " repo_url
+echo ""
+echo "Configurando remote..."
+git remote add origin "$repo_url"
+echo ""
+echo "Fazendo push inicial..."
+git push -u origin main
+echo ""
+echo "✅ Repositório configurado com sucesso!"
+echo ""
+echo "IMPORTANTE: Agora configure as variáveis no Vercel:"
+echo "- GOOGLE_SHEETS_CREDENTIALS: conteúdo do novo credenciais.json"
+echo "- SECRET_KEY: uma chave secreta forte (ex: openssl rand -hex 32)"
