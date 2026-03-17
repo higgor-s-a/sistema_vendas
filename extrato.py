@@ -14,6 +14,17 @@ def limpar_dict(lista):
     return nova
 
 
+def formatar_data_local(data):
+    """Formata data string para horário local BR sem timezone shift."""
+    for fmt in ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M"):
+        try:
+            dt = datetime.strptime(data, fmt)
+            return dt.strftime("%d/%m/%Y %H:%M")
+        except ValueError:
+            pass
+    return data  # Fallback para data inválida
+
+
 @extrato_bp.route("/extrato", methods=["GET", "POST"])
 def extrato():
 
@@ -80,21 +91,8 @@ def extrato():
         vendas = limpar_dict(listar_vendas())
 
         for v in vendas:
-
             if v.get("cliente_nome") == cliente_sel:
-
-                data = v.get("data", "")
-
-                from zoneinfo import ZoneInfo
-                for fmt in ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M"):
-                    try:
-                        dt = datetime.strptime(data, fmt).astimezone(
-                            ZoneInfo("America/Sao_Paulo"))
-                        data = dt.strftime("%d/%m/%Y %H:%M")
-                        break
-                    except:
-                        pass
-
+                data = formatar_data_local(v.get("data", ""))
                 extrato_lista.append({
                     "data": data,
                     "tipo": "Venda",
@@ -110,21 +108,8 @@ def extrato():
         pagamentos = limpar_dict(listar_pagamentos())
 
         for p in pagamentos:
-
             if p.get("cliente_nome") == cliente_sel:
-
-                data = p.get("data", "")
-
-                from zoneinfo import ZoneInfo
-                for fmt in ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M"):
-                    try:
-                        dt = datetime.strptime(data, fmt).astimezone(
-                            ZoneInfo("America/Sao_Paulo"))
-                        data = dt.strftime("%d/%m/%Y %H:%M")
-                        break
-                    except:
-                        pass
-
+                data = formatar_data_local(p.get("data", ""))
                 extrato_lista.append({
                     "data": data,
                     "tipo": "Pagamento",

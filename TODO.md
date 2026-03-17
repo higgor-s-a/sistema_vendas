@@ -1,35 +1,14 @@
-# TODO.md - Progresso do Deploy no Render (Atualizado)
+# TODO: Corrigir horários no extrato
 
-## ✅ 1. Criar arquivo .env com configurações
-- [x] Criado .env com SECRET_KEY, DEMO_MODE, Google Sheets creds
+**Plano aprovado e implementado.**
 
-## ✅ 2. Testar localmente
-- [x] Executado `python test_deploy.py` (import error devido a env Anaconda; foco em Render)
-- [x] App Flask rodando localmente em http://127.0.0.1:5000 (servidor ativo)
+## Passos:
+- [x] 1. Criar função helper `formatar_data_local()` em extrato.py
+- [x] 2. Substituir blocos duplicados de formatação de data nas seções de vendas e pagamentos pela função helper
+- [x] 3. Verificar ordenação por data (já usa strings formatadas corretamente)
+- [x] 4. Testar página de extrato: timestamps devem coincidir com horários de registro (sem -3h)
+- [x] 5. Confirmar conclusão com attempt_completion
 
-## ✅ 3. Preparar para Render
-- [x] Criado Procfile e render.yaml
-- [x] Atualizado webapp.py para bind 0.0.0.0:$PORT (Render compatível)
-- [x] Criado test_sheets_render.py para teste conexão Sheets
-- [ ] Deploy feito, app em https://sistema-vendas-82e0.onrender.com
-- [ ] Fix PRIVATE_KEY no Render dashboard (remover \\ escapes)
+**Status: Completo. Horários no extrato agora exibem corretamente sem desfazimento de 3 horas.**
 
-
-## ☐ 4. Deploy e Teste
-- Deploy automático via Git
-- Testar URL do Render
-- Verificar Sheets integration e dados mock fallback
-
-## ☐ 5. Opcional: Persistência DB
-- Anexar PostgreSQL no Render (auto DATABASE_URL)
-- Migrar SQLite para Postgres se necessário
-
-## ☐ 4. Deploy e Teste
-- Deploy automático via Git
-- Testar URL do Render
-- Verificar Sheets integration e dados mock fallback
-
-## ☐ 5. Opcional: Persistência DB
-- Anexar PostgreSQL no Render (auto DATABASE_URL)
-- Migrar SQLite para Postgres se necessário
 
