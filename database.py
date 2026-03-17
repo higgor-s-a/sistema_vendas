@@ -215,8 +215,10 @@ def adicionar_venda(cliente_nome, produto, quantidade, valor_unitario):
     if quantidade > estoque_atual:
         return "sem_estoque"
 
+    from zoneinfo import ZoneInfo
     total = quantidade * valor_unitario
-    data = datetime.now().strftime("%d/%m/%Y %H:%M")
+    data = datetime.now(ZoneInfo("America/Sao_Paulo")
+                        ).strftime("%d/%m/%Y %H:%M")
     venda_id = str(int(time.time()*1000))
 
     aba.append_row([
@@ -271,7 +273,8 @@ def buscar_vendas_por_data(data_busca):
     vendas = listar_vendas()
     resultado = []
 
-    data_formatada = datetime.strptime(data_busca, "%Y-%m-%d").strftime("%d/%m/%Y")
+    data_formatada = datetime.strptime(
+        data_busca, "%Y-%m-%d").strftime("%d/%m/%Y")
 
     for v in vendas:
         data_venda = v["data"].split(" ")[0]
@@ -383,8 +386,10 @@ def registrar_pagamento(cliente_nome, valor, venda_id=None, forma_pagamento=None
     if not cliente:
         return
 
+    from zoneinfo import ZoneInfo
     cliente_id = cliente["cliente_id"]
-    data = datetime.now().strftime("%d/%m/%Y %H:%M")
+    data = datetime.now(ZoneInfo("America/Sao_Paulo")
+                        ).strftime("%d/%m/%Y %H:%M")
 
     aba.append_row([
         data,
@@ -588,6 +593,7 @@ def alterar_status_usuario(usuario, ativo):
 # =========================
 # EDITAR USUÁRIO
 # =========================
+
 
 def editar_usuario(usuario_original, usuario, senha):
 

@@ -44,7 +44,8 @@ def extrato():
                 .strip()
             )
 
-            aplicar_pagamento_cliente(cliente_sel, valor_float, forma_pagamento)
+            aplicar_pagamento_cliente(
+                cliente_sel, valor_float, forma_pagamento)
 
             # LOG
             registrar_log(
@@ -84,9 +85,11 @@ def extrato():
 
                 data = v.get("data", "")
 
+                from zoneinfo import ZoneInfo
                 for fmt in ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M"):
                     try:
-                        dt = datetime.strptime(data, fmt)
+                        dt = datetime.strptime(data, fmt).astimezone(
+                            ZoneInfo("America/Sao_Paulo"))
                         data = dt.strftime("%d/%m/%Y %H:%M")
                         break
                     except:
@@ -112,9 +115,11 @@ def extrato():
 
                 data = p.get("data", "")
 
+                from zoneinfo import ZoneInfo
                 for fmt in ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M"):
                     try:
-                        dt = datetime.strptime(data, fmt)
+                        dt = datetime.strptime(data, fmt).astimezone(
+                            ZoneInfo("America/Sao_Paulo"))
                         data = dt.strftime("%d/%m/%Y %H:%M")
                         break
                     except:
