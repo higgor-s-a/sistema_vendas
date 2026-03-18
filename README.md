@@ -1,64 +1,117 @@
-# Sistema de Vendas
+# 💻 Sistema Web de Gestão de Vendas
 
-Sistema web para gerenciamento de vendas, clientes, produtos e pagamentos usando Flask e Google Sheets.
+---
 
-## ⚠️ IMPORTANTE - Segurança
+## 📌 Objetivo
 
-**NUNCA commite arquivos de credenciais no Git!**
+Desenvolver uma aplicação web para gerenciamento de vendas, clientes e pagamentos, permitindo o controle completo de transações comerciais.
 
-- O arquivo `database/credenciais.json` está no `.gitignore`
-- Use variáveis de ambiente para credenciais em produção
-- Mantenha seu repositório privado se possível
+---
 
-## Deploy no Vercel
+## 🚀 Funcionalidades
 
-### Pré-requisitos
+* Cadastro e edição de clientes
+* Registro de vendas
+* Controle de pagamentos (pago/pendente)
+* Visualização de histórico de vendas
+* Interface interativa com validações
 
-1. Conta no [Vercel](https://vercel.com)
-2. Projeto no Google Cloud com Service Account configurado
-3. Arquivo de credenciais do Google Service Account
+---
 
-### Configuração das Variáveis de Ambiente
+## 🧠 Regras de Negócio
 
-No painel do Vercel, adicione as seguintes variáveis de ambiente:
+* Cliente pode ser cadastrado com telefone válido ou vazio
+* Cada venda está vinculada a um cliente
+* Controle de status de pagamento (pago ou pendente)
+* Atualização dinâmica das informações no sistema
 
-- `GOOGLE_SHEETS_CREDENTIALS`: Conteúdo completo do arquivo `credenciais.json` (copie todo o JSON como uma string)
-- `SECRET_KEY`: Chave secreta para sessões Flask (ex: `openssl rand -hex 32`)
+---
 
-### Arquivos de Configuração
+## 📸 Demonstração do Sistema
 
-O projeto já inclui:
-- `vercel.json`: Configuração do Vercel
-- `requirements.txt`: Dependências Python
-- `.vercelignore`: Arquivos a serem ignorados no deploy
-- `.gitignore`: Arquivos a serem ignorados pelo Git
+### 🏠 Tela Inicial / Dashboard
 
-### Como fazer o deploy
+![Dashboard](images/dashboard.png)
 
-1. Faça push do código para um repositório Git (GitHub, GitLab, etc.)
-2. Conecte o repositório ao Vercel
-3. Configure as variáveis de ambiente
-4. Faça o deploy
+Visão geral do sistema, permitindo acesso às funcionalidades principais e visualização inicial dos dados.
 
-### Desenvolvimento Local
+---
 
-```bash
-pip install -r requirements.txt
-python webapp.py
-```
+### 👤 Cadastro de Cliente
 
-### Endpoints de Debug
+![Cadastro de Cliente](images/cadastro_cliente.png)
 
-- `/debug`: Testa funcionalidades básicas
-- `/`: Página inicial (requer login)
+Tela para inserção de novos clientes com validação de dados.
 
-### Segurança Adicional
+---
 
-- Mantenha seu repositório privado
-- Use variáveis de ambiente para credenciais
-- Regularmente rotacione as chaves do Service Account
-- Monitore o uso das credenciais no Google Cloud Console
+### 📋 Lista de Clientes
 
-### Suporte
+![Lista de Clientes](images/lista_clientes.png)
 
-Para dúvidas sobre o deploy no Vercel, consulte a [documentação oficial](https://vercel.com/docs).
+Visualização dos clientes cadastrados com opção de edição.
+
+---
+
+### ✏️ Edição de Cliente
+
+![Editar Cliente](images/editar_cliente.png)
+
+Popup para edição de informações do cliente, com regras de validação.
+
+---
+
+### 💰 Registro de Venda
+
+![Registro de Venda](images/registro_venda.png)
+
+Tela principal de registro de vendas, vinculando cliente e valor da transação.
+
+---
+
+### 💳 Controle de Pagamento
+
+![Pagamento](images/popup_pagamento.png)
+
+Confirmação do status de pagamento no momento do registro da venda.
+
+---
+
+### 📊 Histórico de Vendas
+
+![Histórico](images/historico_vendas.png)
+
+Listagem das vendas registradas com status de pagamento e acompanhamento.
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+* Python
+* HTML / CSS / JavaScript
+* Integração com armazenamento de dados
+* Git e GitHub
+
+---
+
+## 🎯 Aprendizados
+
+* Desenvolvimento de aplicação web completa
+* Implementação de regras de negócio reais
+* Manipulação e persistência de dados
+* Integração entre frontend e backend
+
+---
+
+## 📈 Possíveis Melhorias
+
+* Integração com banco de dados (PostgreSQL)
+* Sistema de autenticação
+* Dashboard analítico de vendas
+* API para integração externa
+
+---
+
+## 🧩 Conclusão
+
+Este projeto é um sistema real de gestão de vendas, demonstrando capacidade de desenvolvimento completo, desde a interface até a lógica de negócio e controle de dados.
